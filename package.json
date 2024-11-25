@@ -1,0 +1,26 @@
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.2.4",
+    "@chakra-ui/next-js": "^2.4.2",
+    "@chakra-ui/react": "2",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "@privy-io/react-auth": "^1.95.0",
+    "framer-motion": "^11.11.17",
+    "next": "^15.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.9.3",
+    "@types/react": "18.3.12",
+    "prettier": "^3.3.3",
+    "typescript": "^5.7.2"
+  }
+}
