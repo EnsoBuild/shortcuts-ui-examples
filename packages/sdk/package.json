@@ -1,0 +1,20 @@
+{
+  "name": "@enso/sdk",
+  "version": "1.0.0",
+  "description": "SDK for interacting with the Enso API",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc",
+    "test": "jest",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
