@@ -12,8 +12,10 @@ import { normalizeValue } from "@enso/shared/util";
 import {
   EnsoClient,
   ApproveData,
-  RouterDataParams,
-  RouterData,
+  RouteParams,
+  RouteData,
+  QuoteData,
+  QuoteParams
 } from "@enso/sdk";
 
 const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
@@ -38,8 +40,8 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-export const useEnsoRouterData = (params: RouterDataParams) => {
-  return useQuery<RouterData>({
+export const useEnsoRouterData = (params: RouteParams) => {
+  return useQuery<RouteData>({
     queryKey: [
       "enso-router",
       params.chainId,
@@ -86,4 +88,19 @@ export const useSendEnsoTransaction = (
     sendTransaction,
     ensoData,
   };
+};
+
+export const useEnsoQuote = (params: QuoteParams) => {
+  return useQuery<QuoteData>({
+    queryKey: [
+      "enso-quote",
+      params.chainId,
+      params.fromAddress,
+      params.amountIn,
+      params.tokenIn,
+      params.tokenOut,
+    ],
+    queryFn: () => ensoClient.getQuoteData(params),
+    enabled: +params.amountIn > 0,
+  });
 };

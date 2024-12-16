@@ -2,26 +2,21 @@ import { Address } from "@enso/shared/types";
 
 export type RoutingStrategy = "router" | "delegate" | "ensowallet";
 
-export type RouterDataParams = {
+export type RouteParams = {
   fromAddress: Address;
   receiver: Address;
   spender: Address;
   chainId: number;
   amountIn: string;
-  slippage: number;
+  slippage?: number;
   tokenIn: Address;
   tokenOut: Address;
   routingStrategy: RoutingStrategy;
+  fee?: number;
+  feeReceiver?: Address;
 };
 
-export type ApprovalDataParams = {
-  fromAddress: string;
-  tokenAddress: string;
-  chainId: number;
-  amount: string;
-};
-
-export type RouterData = {
+export type RouteData = {
   route: {
     tokenIn: string;
     positionInId: string;
@@ -45,6 +40,13 @@ export type RouterData = {
   }[];
 };
 
+export type ApproveParams = {
+  fromAddress: string;
+  tokenAddress: string;
+  chainId: number;
+  amount: string;
+};
+
 export type ApproveData = {
   amount: string;
   gas: string;
@@ -56,3 +58,27 @@ export type ApproveData = {
     to: Address;
   };
 };
+
+export type RouteSegment = {
+  action: string;
+  protocol: string;
+  tokenIn: string[];
+  tokenOut: string[];
+  positionInId: string[];
+  positionOutId: string[];
+};
+
+export type QuoteParams = Omit<
+  RouteParams,
+  "spender" | "receiver" | "slippage"
+> & {
+  priceImpact: boolean; // Whether to calculate price impact.
+};
+
+export type QuoteData = {
+  amountOut: string;
+  route: RouteSegment[];
+  gas: string;
+};
+
+

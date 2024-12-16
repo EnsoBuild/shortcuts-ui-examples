@@ -105,10 +105,7 @@ const LuckyDeFi = () => {
   const exchangeRate =
     normalizeValue(ensoData?.amountOut, selectedMeme?.decimals) / +swapValue;
 
-  const amountOut = normalizeValue(
-    ensoData?.amountOut,
-    selectedMeme?.decimals,
-  ).toPrecision(4);
+  const amountOut = normalizeValue(ensoData?.amountOut, selectedMeme?.decimals);
 
   const SpoilerComponent = useCallback(
     ({ children }) => (

@@ -1,12 +1,21 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import {
-  ApprovalDataParams,
+  ApproveParams,
   ApproveData,
-  RouterDataParams,
-  RouterData,
+  RouteParams,
+  RouteData,
+  QuoteData,
+  QuoteParams,
 } from "./types";
 
-export { ApprovalDataParams, ApproveData, RouterDataParams, RouterData };
+export {
+  ApproveParams,
+  ApproveData,
+  RouteParams,
+  RouteData,
+  QuoteData,
+  QuoteParams,
+};
 
 export class EnsoClient {
   private client: AxiosInstance;
@@ -29,30 +38,37 @@ export class EnsoClient {
     }
   }
 
-  public async getApprovalData(params: ApprovalDataParams) {
-    let url = "/wallet/approve?";
-
-    Object.entries(params).forEach(([key, value]) => {
-      url += `${key}=${value}&`;
-    });
-    url += "routingStrategy=router";
+  public async getApprovalData(params: ApproveParams) {
+    const url = "/wallet/approve";
 
     return this.request<ApproveData>({
-      method: "GET",
       url,
+
+      method: "GET",
+      params: {
+        ...params,
+        routingStrategy: "router",
+      },
     });
   }
 
-  public async getRouterData(params: RouterDataParams) {
-    let url = "/shortcuts/route?";
+  public async getRouterData(params: RouteParams) {
+    const url = "/shortcuts/route";
 
-    Object.entries(params).forEach(([key, value]) => {
-      url += `${key}=${value}&`;
-    });
-
-    return this.request<RouterData>({
+    return this.request<RouteData>({
       method: "GET",
       url,
+      params,
+    });
+  }
+
+  public async getQuoteData(params: QuoteParams) {
+    const url = "/shortcuts/quote";
+
+    return this.request<QuoteData>({
+      method: "GET",
+      url,
+      params,
     });
   }
 }
