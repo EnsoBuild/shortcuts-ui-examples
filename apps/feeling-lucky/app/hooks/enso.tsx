@@ -9,14 +9,15 @@ import {
   useTokenFromList,
 } from "./index";
 import { normalizeValue } from "@enso/shared/util";
-import { EnsoClient } from "@enso/sdk";
 import {
+  EnsoClient,
   ApproveData,
   RouterDataParams,
   RouterData,
-} from "@enso/sdk/dist/types";
+} from "@enso/sdk";
 
 const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
+// const ENSO_BASE_URL = "http://localhost:3000";
 
 const ensoClient = new EnsoClient(ENSO_BASE_URL, ENSO_API_KEY);
 
@@ -33,7 +34,7 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
         chainId,
         amount,
       }),
-    enabled: +amount > 0,
+    enabled: +amount > 0 && !!address && !!tokenAddress,
   });
 };
 

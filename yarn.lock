@@ -2801,6 +2801,11 @@ color@^4.2.3:
     color-convert "^2.0.1"
     color-string "^1.9.0"
 
+colord@^2.9.3:
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/colord/-/colord-2.9.3.tgz#4f8ce919de456f1d5c1c368c307fe20f3e59fb43"
+  integrity sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==
+
 colorette@^2.0.7:
   version "2.0.20"
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.20.tgz#9eb793e6833067f7235902fcd3b09917a000a95a"
@@ -5022,6 +5027,13 @@ split2@^4.0.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/split2/-/split2-4.2.0.tgz#c9c5920904d148bab0b9f67145f245a86aadbfa4"
   integrity sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==
+
+spoiled@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/spoiled/-/spoiled-0.3.3.tgz#a3b4542c909f9d29640b092a8aa74a73cc5ad6ab"
+  integrity sha512-18rNJAKtqQ+DEXP8jQA39cSzqfQNO29CVIrwYOw7ce6/wDi8qKkoFyTcnrjVolnGzzU2SdOL5bEp5d6zvf1nmQ==
+  dependencies:
+    colord "^2.9.3"
 
 std-env@^3.7.0:
   version "3.8.0"

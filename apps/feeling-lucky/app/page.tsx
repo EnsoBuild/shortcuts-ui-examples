@@ -13,20 +13,27 @@ import {
   Text,
   VStack,
   IconButton,
+  Center,
 } from "@chakra-ui/react";
 import { SettingsIcon } from "@chakra-ui/icons";
 import { base } from "viem/chains";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSwitchChain, useAccount } from "wagmi";
-import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { usePrivy } from "@privy-io/react-auth";
+import { Spoiler } from "spoiled";
 import {
   useApproveIfNecessary,
-  useErc20Balance, useNetworkId,
+  useErc20Balance,
+  useNetworkId,
   useTokenFromList,
 } from "./hooks";
 import { useEnsoApprove, useSendEnsoTransaction } from "./hooks/enso";
 import TokenSelector from "./components/TokenSelector";
-import { denormalizeValue, normalizeValue } from "@enso/shared/util";
+import {
+  denormalizeValue,
+  formatNumber,
+  normalizeValue,
+} from "@enso/shared/util";
 import WalletButton from "./components/WalletButton";
 import { Address } from "@enso/shared/types";
 
@@ -65,6 +72,7 @@ const LuckyDeFi = () => {
   const balance = useErc20Balance(tokenIn);
   const { ready, authenticated } = usePrivy();
   const { address } = useAccount();
+  const [revealed, setRevealed] = useState(false);
 
   const swapAmount = denormalizeValue(swapValue, tokenInData?.decimals);
 
@@ -72,8 +80,6 @@ const LuckyDeFi = () => {
   const approve = useApproveIfNecessary(
     tokenIn,
     approveData.data?.spender,
-    // TODO: use approve endpoint spender when 500 is fixed
-    // "0x80EbA3855878739F4710233A8a19d89Bdd2ffB8E",
     swapAmount,
   );
 
@@ -99,6 +105,22 @@ const LuckyDeFi = () => {
   const exchangeRate =
     normalizeValue(ensoData?.amountOut, selectedMeme?.decimals) / +swapValue;
 
+  const amountOut = normalizeValue(
+    ensoData?.amountOut,
+    selectedMeme?.decimals,
+  ).toPrecision(4);
+
+  const SpoilerComponent = useCallback(
+    ({ children }) => (
+      <Spoiler hidden={!revealed} onClick={() => setRevealed((val) => !val)}>
+        {children}
+      </Spoiler>
+    ),
+    [revealed],
+  );
+
+  const approveNeeded = !!approve && +swapAmount > 0 && !!tokenIn;
+
   return (
     <Container py={8} h={"full"} alignContent={"center"} w={"full"}>
       <Flex
@@ -110,6 +132,7 @@ const LuckyDeFi = () => {
         w={"full"}
       >
         <div />
+
         <WalletButton />
       </Flex>
 
@@ -183,15 +206,26 @@ const LuckyDeFi = () => {
             </Flex>
 
             <VStack align="stretch" spacing={3}>
+              <Center>
+                <Heading as={"h6"} size={"md"} color="gray.500">
+                  You will receive:{" "}
+                  <SpoilerComponent>
+                    {formatNumber(amountOut)} {selectedMeme?.symbol}
+                  </SpoilerComponent>
+                </Heading>
+              </Center>
+
               <Flex justify="space-between">
                 <Text color="gray.600">Exchange Rate:</Text>
-                <Text>
-                  1 {tokenInData?.symbol} ={" "}
-                  {Number.isNaN(exchangeRate)
-                    ? 0.0
-                    : exchangeRate.toPrecision(4)}{" "}
-                  {selectedMeme?.symbol}
-                </Text>
+                <SpoilerComponent>
+                  <Text>
+                    1 {tokenInData?.symbol} ={" "}
+                    {Number.isNaN(exchangeRate)
+                      ? 0.0
+                      : formatNumber(exchangeRate)}{" "}
+                    {selectedMeme?.symbol}
+                  </Text>
+                </SpoilerComponent>
               </Flex>
 
               <Flex justify="space-between">
@@ -224,7 +258,7 @@ const LuckyDeFi = () => {
                       Switch to Base
                     </Button>
                   ) : (
-                    approve && (
+                    approveNeeded && (
                       <Button
                         isLoading={approve.isLoading}
                         width="100%"

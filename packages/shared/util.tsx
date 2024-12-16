@@ -11,3 +11,11 @@ export const compareCaseInsensitive = (a: string, b: string) => {
 
 export const shortenAddress = (address: Address) =>
   `${address.slice(0, 6)}...${address.slice(-4)}`;
+
+const formatter = Intl.NumberFormat("en", {
+  notation: "compact",
+  maximumFractionDigits: 2,
+});
+
+export const formatNumber = (value: number | string) =>
+  formatter.format(+Number(value));

@@ -1,15 +1,15 @@
 import { Providers } from "./providers";
 
 export default function RootLayout({
-                                     children,
-                                   }: {
+  children,
+}: {
   children: React.ReactNode;
 }) {
   return (
-      <html lang="en" style={{ height: "100%" }}>
+    <html lang="en" style={{ height: "100%" }}>
       <body style={{ height: "100%" }}>
-      <Providers>{children}</Providers>
+        <Providers>{children}</Providers>
       </body>
-      </html>
+    </html>
   );
 }

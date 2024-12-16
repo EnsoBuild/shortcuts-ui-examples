@@ -197,12 +197,12 @@ export const useExtendedSendTransaction = (
 };
 
 export const useApproveIfNecessary = (
-  token: Address,
+  tokenIn: Address,
   target: Address,
   amount: string,
 ) => {
-  const allowance = useAllowance(token, target);
-  const approveData = useApprove(token, target, amount);
+  const allowance = useAllowance(tokenIn, target);
+  const approveData = useApprove(tokenIn, target, amount);
   const writeApprove = useExtendedContractWrite(
     approveData.title,
     approveData.args,

@@ -6,6 +6,8 @@ import {
   RouterData,
 } from "./types";
 
+export { ApprovalDataParams, ApproveData, RouterDataParams, RouterData };
+
 export class EnsoClient {
   private client: AxiosInstance;
 
