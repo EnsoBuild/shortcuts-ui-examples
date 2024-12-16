@@ -14,6 +14,9 @@ import {
   VStack,
   IconButton,
   Center,
+  Switch,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
 import { SettingsIcon } from "@chakra-ui/icons";
 import { base } from "viem/chains";
@@ -36,6 +39,7 @@ import {
 } from "@enso/shared/util";
 import WalletButton from "./components/WalletButton";
 import { Address } from "@enso/shared/types";
+import {isEoaMode, toggleIsEoaMode} from "./util";
 
 const MEMES_LIST = [
   "0x532f27101965dd16442e59d40670faf5ebb142e4",
@@ -64,7 +68,6 @@ const CategoryList = {
 
 const LuckyDeFi = () => {
   const [tokenIn, setTokenIn] = useState<Address>();
-  const [swapValue, setSwapValue] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState(Category.meme);
   const chainId = useNetworkId();
   const tokenInData = useTokenFromList(tokenIn);
@@ -72,6 +75,7 @@ const LuckyDeFi = () => {
   const balance = useErc20Balance(tokenIn);
   const { ready, authenticated } = usePrivy();
   const { address } = useAccount();
+  const [swapValue, setSwapValue] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
   const swapAmount = denormalizeValue(swapValue, tokenInData?.decimals);
@@ -101,11 +105,10 @@ const LuckyDeFi = () => {
   const wrongChain = chainId !== base.id;
   const notEnoughBalance = tokenIn && +balance < +swapAmount;
   const needLogin = ready && !address;
-
   const exchangeRate =
     normalizeValue(ensoData?.amountOut, selectedMeme?.decimals) / +swapValue;
-
   const amountOut = normalizeValue(ensoData?.amountOut, selectedMeme?.decimals);
+  const approveNeeded = !!approve && +swapAmount > 0 && !!tokenIn;
 
   const SpoilerComponent = useCallback(
     ({ children }) => (
@@ -115,8 +118,6 @@ const LuckyDeFi = () => {
     ),
     [revealed],
   );
-
-  const approveNeeded = !!approve && +swapAmount > 0 && !!tokenIn;
 
   return (
     <Container py={8} h={"full"} alignContent={"center"} w={"full"}>
@@ -129,6 +130,20 @@ const LuckyDeFi = () => {
         w={"full"}
       >
         <div />
+
+        <FormControl display="flex" width={"fit-content"}>
+          <FormLabel htmlFor="wallet-switch" mb="0">
+            Wallet
+          </FormLabel>
+          <Switch
+            id="wallet-switch"
+            isChecked={isEoaMode}
+            onChange={toggleIsEoaMode}
+          />
+          <FormLabel htmlFor="wallet-switch" mb="0" ml={2}>
+            EOA
+          </FormLabel>
+        </FormControl>
 
         <WalletButton />
       </Flex>
