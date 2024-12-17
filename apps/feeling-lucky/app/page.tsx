@@ -12,10 +12,8 @@ import {
   Tabs,
   Text,
   VStack,
-  IconButton,
   Center,
 } from "@chakra-ui/react";
-import { SettingsIcon } from "@chakra-ui/icons";
 import { base } from "viem/chains";
 import { useCallback, useMemo, useState } from "react";
 import { useSwitchChain, useAccount } from "wagmi";
@@ -58,7 +56,7 @@ const LuckyDeFi = () => {
   const tokenInData = useTokenFromList(tokenIn);
   const { switchChain } = useSwitchChain();
   const balance = useErc20Balance(tokenIn);
-  const { ready, authenticated } = usePrivy();
+  const { ready } = usePrivy();
   const { address } = useAccount();
   const [swapValue, setSwapValue] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -173,19 +171,21 @@ const LuckyDeFi = () => {
                 </Flex>
                 <Input
                   type="number"
+                  fontSize="xl"
                   variant="unstyled"
                   placeholder="0.0"
                   textAlign="right"
                   value={swapValue}
                   onChange={(e) => setSwapValue(+e.target.value)}
+                  mr={5}
                 />
               </Flex>
-              <IconButton
-                aria-label="Settings"
-                icon={<SettingsIcon />}
-                variant="ghost"
-                ml={2}
-              />
+              {/*<IconButton*/}
+              {/*  aria-label="Settings"*/}
+              {/*  icon={<SettingsIcon />}*/}
+              {/*  variant="ghost"*/}
+              {/*  ml={2}*/}
+              {/*/>*/}
             </Flex>
 
             <VStack align="stretch" spacing={3}>
@@ -266,10 +266,6 @@ const LuckyDeFi = () => {
                 </Flex>
               )}
             </Flex>
-
-            <Text textAlign="center" color="gray.500" fontSize="sm" mt={2}>
-              Terms & Conditions
-            </Text>
           </Box>
         </Box>
       </VStack>
