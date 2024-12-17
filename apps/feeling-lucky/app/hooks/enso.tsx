@@ -14,8 +14,8 @@ import {
 } from "@enso/sdk";
 import { useTokenFromList } from "./common";
 
-// const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
-const ENSO_BASE_URL = "http://localhost:3000/api/v1";
+const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
+// const ENSO_BASE_URL = "http://localhost:3000/api/v1";
 
 const ensoClient = new EnsoClient(ENSO_BASE_URL, ENSO_API_KEY);
 
