@@ -13,13 +13,14 @@ import Watchers from "./components/Watchers";
 const queryClient = new QueryClient();
 const PRIVY_KEY = process.env.NEXT_PUBLIC_PRIVY_KEY;
 
+
 export function Providers({ children }) {
   // has to be set up in component to get access to client's localStorage
   const { current: privyConfig } = useRef<PrivyClientConfig>({
     appearance: {
       theme: "light",
       accentColor: "#EDF2F7",
-      logo: "/public/enso.svg",
+      logo: "/big-logo.svg",
       walletChainType: "ethereum-only",
     },
     loginMethods: ["wallet", "telegram", "google"],
