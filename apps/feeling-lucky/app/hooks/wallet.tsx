@@ -242,7 +242,7 @@ export const useSetValidWagmiAddress = () => {
         wallet.connectorType === (isEoaEnabled ? "embedded" : "injected"),
     );
 
-    if (targetAddress?.address !== address) {
+    if (targetAddress && targetAddress.address !== address) {
       console.log(`Setting active wallet to ${targetAddress.address}`);
       setActiveWallet(targetAddress).then(() =>
         console.log("Active wallet set"),
