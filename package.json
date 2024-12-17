@@ -6,7 +6,8 @@
   ],
   "scripts": {
     "fl:dev": "yarn workspace @enso/feeling-lucky dev",
-    "sdk:dev": "yarn workspace @enso/sdk dev"
+    "sdk:dev": "yarn workspace @enso/sdk dev",
+    "sdk:build": "yarn workspace @enso/sdk build"
   },
   "name": "ense-apps-monorepo",
   "version": "1.0.0",
