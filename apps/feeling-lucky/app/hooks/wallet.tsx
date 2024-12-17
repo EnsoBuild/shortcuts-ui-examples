@@ -1,3 +1,4 @@
+import { useCallback, useEffect } from "react";
 import {
   useReadContract,
   useAccount,
@@ -9,15 +10,17 @@ import {
   useChainId,
   UseSendTransactionReturnType,
   UseWriteContractReturnType,
+  useBlockNumber,
 } from "wagmi";
-import { useCallback, useEffect } from "react";
 import { enqueueSnackbar } from "notistack";
-import { useQuery } from "@tanstack/react-query";
+import { useWallets } from "@privy-io/react-auth";
+import { useSetActiveWallet } from "@privy-io/wagmi";
 import { BaseError } from "viem";
 import erc20Abi from "../../erc20Abi.json";
-import { normalizeValue } from "@enso/shared/util";
+import { formatNumber, normalizeValue } from "@enso/shared/util";
 import { Address } from "@enso/shared/types";
-import {useWallets} from "@privy-io/react-auth";
+import { useIsEoaEnabled, useTokenFromList } from "./common";
+import { useQueryClient } from "@tanstack/react-query";
 
 enum TxState {
   Success,
@@ -46,13 +49,20 @@ export const useErc20Balance = (tokenAddress: `0x${string}`) => {
 export const useAllowance = (token: Address, spender: Address) => {
   const { address } = useAccount();
   const chainId = useChainId();
-  const { data } = useReadContract({
+  const blockNumber = useBlockNumber({ watch: true });
+  const queryClient = useQueryClient();
+  const { data, queryKey } = useReadContract({
     chainId,
     address: token,
     abi: erc20Abi,
     functionName: "allowance",
     args: [address, spender],
+    blockTag: "pending",
   });
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey });
+  }, [blockNumber, queryClient, queryKey]);
 
   return data?.toString() ?? "0";
 };
@@ -62,7 +72,7 @@ export const useApprove = (token: Address, target: Address, amount: string) => {
   const chainId = useChainId();
 
   return {
-    title: `Approve ${normalizeValue(+amount, tokenData?.decimals)} of ${tokenData?.symbol} for spending`,
+    title: `Approve ${formatNumber(normalizeValue(+amount, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
     args: {
       chainId,
       address: token,
@@ -211,42 +221,32 @@ export const useApproveIfNecessary = (
   return +allowance < +amount ? writeApprove : undefined;
 };
 
-export const getTokenList = () =>
-  fetch("https://tokens.coingecko.com/base/all.json").then((res) => res.json());
-
-export const useGeckoList = () =>
-  useQuery<{ tokens: Token[] } | undefined>({
-    queryKey: ["tokenList"],
-    queryFn: getTokenList,
-  });
-
-type Token = {
-  address: Address;
-  name: string;
-  symbol: string;
-  decimals: number;
-  logoURI: string;
-};
-
-export const useTokenFromList = (tokenAddress: Address) => {
-  const { data } = useGeckoList();
-
-  return data?.tokens.find((token) => token.address === tokenAddress);
-};
-
-export const getOneInchTokenList = () =>
-  fetch("https://tokens.1inch.io/v1.2/8453").then((res) => res.json());
-
-export const useOneInchTokenList = () =>
-  useQuery<Record<string, Token> | undefined>({
-    queryKey: ["oneInchTokenList"],
-    queryFn: getOneInchTokenList,
-  });
-
 export const useNetworkId = () => {
   const { wallets } = useWallets();
   const { address } = useAccount();
   const activeWallet = wallets?.find((wallet) => wallet.address === address);
 
   return +activeWallet?.chainId.split(":")[1];
+};
+
+export const useSetValidWagmiAddress = () => {
+  const { address } = useAccount();
+  const { wallets } = useWallets();
+  const { setActiveWallet } = useSetActiveWallet();
+  const isEoaEnabled = useIsEoaEnabled();
+
+  // set wagmi active address depending on if eoa mode is enabled
+  useEffect(() => {
+    const targetAddress = wallets.find(
+      (wallet) =>
+        wallet.connectorType === (isEoaEnabled ? "embedded" : "injected"),
+    );
+
+    if (targetAddress?.address !== address) {
+      console.log(`Setting active wallet to ${targetAddress.address}`);
+      setActiveWallet(targetAddress).then(() =>
+        console.log("Active wallet set"),
+      );
+    }
+  }, [address, wallets]);
 };

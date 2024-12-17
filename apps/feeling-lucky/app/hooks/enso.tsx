@@ -1,25 +1,21 @@
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
-import { base } from "viem/chains";
 import { ENSO_API_KEY } from "../constants";
-import {
-  useExtendedSendTransaction,
-  useNetworkId,
-  useTokenFromList,
-} from "./index";
-import { normalizeValue } from "@enso/shared/util";
+import { useExtendedSendTransaction, useNetworkId } from "./wallet";
+import { formatNumber, isAddress, normalizeValue } from "@enso/shared/util";
 import {
   EnsoClient,
   ApproveData,
   RouteParams,
   RouteData,
   QuoteData,
-  QuoteParams
+  QuoteParams,
 } from "@enso/sdk";
+import { useTokenFromList } from "./common";
 
-const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
-// const ENSO_BASE_URL = "http://localhost:3000";
+// const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
+const ENSO_BASE_URL = "http://localhost:3000/api/v1";
 
 const ensoClient = new EnsoClient(ENSO_BASE_URL, ENSO_API_KEY);
 
@@ -51,7 +47,11 @@ export const useEnsoRouterData = (params: RouteParams) => {
       params.tokenOut,
     ],
     queryFn: () => ensoClient.getRouterData(params),
-    enabled: +params.amountIn > 0,
+    enabled:
+      +params.amountIn > 0 &&
+      isAddress(params.fromAddress) &&
+      isAddress(params.tokenIn) &&
+      isAddress(params.tokenOut),
   });
 };
 
@@ -80,7 +80,7 @@ export const useSendEnsoTransaction = (
   const tokenFromData = useTokenFromList(tokenIn);
 
   const sendTransaction = useExtendedSendTransaction(
-    `Purchase ${normalizeValue(+amountIn, tokenData?.decimals)} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
+    `Purchase ${formatNumber(normalizeValue(+amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
     ensoData?.tx,
   );
 

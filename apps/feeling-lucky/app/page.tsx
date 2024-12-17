@@ -14,9 +14,6 @@ import {
   VStack,
   IconButton,
   Center,
-  Switch,
-  FormControl,
-  FormLabel,
 } from "@chakra-ui/react";
 import { SettingsIcon } from "@chakra-ui/icons";
 import { base } from "viem/chains";
@@ -28,8 +25,7 @@ import {
   useApproveIfNecessary,
   useErc20Balance,
   useNetworkId,
-  useTokenFromList,
-} from "./hooks";
+} from "./hooks/wallet";
 import { useEnsoApprove, useSendEnsoTransaction } from "./hooks/enso";
 import TokenSelector from "./components/TokenSelector";
 import {
@@ -38,23 +34,10 @@ import {
   normalizeValue,
 } from "@enso/shared/util";
 import WalletButton from "./components/WalletButton";
+import { DEFI_LIST, MEMES_LIST, USDC_ADDRESSES } from "./constants";
+import { useTokenFromList } from "./hooks/common";
+import EoaModeSelector from "./components/EoaModeSelector";
 import { Address } from "@enso/shared/types";
-import {isEoaMode, toggleIsEoaMode} from "./util";
-
-const MEMES_LIST = [
-  "0x532f27101965dd16442e59d40670faf5ebb142e4",
-  "0x4ed4e862860bed51a9570b96d89af5e1b0efefed",
-  "0xb1a03eda10342529bbf8eb700a06c60441fef25d",
-  "0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4",
-  "0x9a26f5433671751c3276a065f57e5a02d2817973",
-  "0x52b492a33e447cdb854c7fc19f1e57e8bfa1777d",
-];
-const DEFI_LIST = [
-  "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
-  "0x22e6966b799c4d5b13be962e1d117b56327fda66",
-  "0x7d49a065d17d6d4a55dc13649901fdbb98b2afba",
-  "0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842",
-];
 
 enum Category {
   defi,
@@ -67,7 +50,9 @@ const CategoryList = {
 };
 
 const LuckyDeFi = () => {
-  const [tokenIn, setTokenIn] = useState<Address>();
+  const [tokenIn, setTokenIn] = useState<Address>(
+    USDC_ADDRESSES[base.id] as Address,
+  );
   const [selectedCategory, setSelectedCategory] = useState(Category.meme);
   const chainId = useNetworkId();
   const tokenInData = useTokenFromList(tokenIn);
@@ -129,21 +114,7 @@ const LuckyDeFi = () => {
         left={0}
         w={"full"}
       >
-        <div />
-
-        <FormControl display="flex" width={"fit-content"}>
-          <FormLabel htmlFor="wallet-switch" mb="0">
-            Wallet
-          </FormLabel>
-          <Switch
-            id="wallet-switch"
-            isChecked={isEoaMode}
-            onChange={toggleIsEoaMode}
-          />
-          <FormLabel htmlFor="wallet-switch" mb="0" ml={2}>
-            EOA
-          </FormLabel>
-        </FormControl>
+        <EoaModeSelector />
 
         <WalletButton />
       </Flex>

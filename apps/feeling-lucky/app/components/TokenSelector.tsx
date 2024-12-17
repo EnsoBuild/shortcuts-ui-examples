@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Flex, Text } from "@chakra-ui/react";
 import { useMemo } from "react";
 import { Select } from "chakra-react-select";
-import { useOneInchTokenList } from "../hooks";
+import { useOneInchTokenList } from "../hooks/common";
 import { Address } from "@enso/shared/types";
 
 const TokenSelector = ({

@@ -18,4 +18,17 @@ export const USE_POSITIONS_DATA_SOURCE =
 
 export const ENSO_API_KEY = process.env.NEXT_PUBLIC_ENSO_API_KEY;
 
-console.log(ENSO_API_KEY);
+export const MEMES_LIST = [
+  "0x532f27101965dd16442e59d40670faf5ebb142e4",
+  "0x4ed4e862860bed51a9570b96d89af5e1b0efefed",
+  "0xb1a03eda10342529bbf8eb700a06c60441fef25d",
+  "0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4",
+  "0x9a26f5433671751c3276a065f57e5a02d2817973",
+  "0x52b492a33e447cdb854c7fc19f1e57e8bfa1777d",
+];
+export const DEFI_LIST = [
+  "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+  "0x22e6966b799c4d5b13be962e1d117b56327fda66",
+  "0x7d49a065d17d6d4a55dc13649901fdbb98b2afba",
+  "0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842",
+];
