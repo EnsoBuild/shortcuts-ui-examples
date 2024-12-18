@@ -23,17 +23,18 @@ import {
   useApproveIfNecessary,
   useErc20Balance,
   useNetworkId,
+  useSendEnsoTransaction,
 } from "./hooks/wallet";
-import { useEnsoApprove, useSendEnsoTransaction } from "./hooks/enso";
-import TokenSelector from "./components/TokenSelector";
+import { useEnsoApprove } from "./hooks/enso";
 import {
   denormalizeValue,
   formatNumber,
   normalizeValue,
 } from "@enso/shared/util";
-import WalletButton from "./components/WalletButton";
 import { DEFI_LIST, MEMES_LIST, USDC_ADDRESSES } from "./constants";
 import { useTokenFromList } from "./hooks/common";
+import TokenSelector from "./components/TokenSelector";
+import WalletButton from "./components/WalletButton";
 import EoaModeSelector from "./components/EoaModeSelector";
 import { Address } from "@enso/shared/types";
 
@@ -58,7 +59,7 @@ const LuckyDeFi = () => {
   const balance = useErc20Balance(tokenIn);
   const { ready } = usePrivy();
   const { address } = useAccount();
-  const [swapValue, setSwapValue] = useState(0);
+  const [swapValue, setSwapValue] = useState(10);
   const [revealed, setRevealed] = useState(false);
 
   const swapAmount = denormalizeValue(swapValue, tokenInData?.decimals);
@@ -95,7 +96,11 @@ const LuckyDeFi = () => {
 
   const SpoilerComponent = useCallback(
     ({ children }) => (
-      <Spoiler hidden={!revealed} onClick={() => setRevealed((val) => !val)}>
+      <Spoiler
+        density={0.5}
+        hidden={!revealed}
+        onClick={() => setRevealed((val) => !val)}
+      >
         {children}
       </Spoiler>
     ),
@@ -164,6 +169,7 @@ const LuckyDeFi = () => {
                     fontSize="sm"
                     mb={1}
                     whiteSpace={"nowrap"}
+                    visibility={address ? "visible" : "hidden"}
                   >
                     Available: {normalizeValue(+balance, tokenInData?.decimals)}{" "}
                     {tokenInData?.symbol}

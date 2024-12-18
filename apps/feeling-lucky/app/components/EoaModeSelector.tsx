@@ -8,9 +8,10 @@ const EoaModeSelector = () => (
     gap={2}
     width={"fit-content"}
     alignItems={"center"}
+    w={"205px"}
   >
     <FormLabel htmlFor="wallet-switch" m={0}>
-      Wallet
+      Wallet(Injected)
     </FormLabel>
     <Switch
       id="wallet-switch"
@@ -18,7 +19,7 @@ const EoaModeSelector = () => (
       onChange={toggleIsEoaMode}
     />
     <FormLabel htmlFor="wallet-switch" m={0}>
-      EOA
+      Privy
     </FormLabel>
   </FormControl>
 );

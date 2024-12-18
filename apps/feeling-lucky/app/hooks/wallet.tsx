@@ -11,16 +11,19 @@ import {
   UseSendTransactionReturnType,
   UseWriteContractReturnType,
   useBlockNumber,
+  useDisconnect,
 } from "wagmi";
 import { enqueueSnackbar } from "notistack";
 import { useWallets } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { BaseError } from "viem";
-import erc20Abi from "../../erc20Abi.json";
-import { formatNumber, normalizeValue } from "@enso/shared/util";
-import { Address } from "@enso/shared/types";
-import { useIsEoaEnabled, useTokenFromList } from "./common";
 import { useQueryClient } from "@tanstack/react-query";
+import { useIsEoaEnabled, useTokenFromList } from "./common";
+import { formatNumber, normalizeValue } from "@enso/shared/util";
+import erc20Abi from "../../erc20Abi.json";
+import { useEnsoRouterData } from "./enso";
+import { Address } from "@enso/shared/types";
+import { RouteParams } from "@enso/sdk";
 
 enum TxState {
   Success,
@@ -233,6 +236,7 @@ export const useSetValidWagmiAddress = () => {
   const { address } = useAccount();
   const { wallets } = useWallets();
   const { setActiveWallet } = useSetActiveWallet();
+  const { disconnect } = useDisconnect();
   const isEoaEnabled = useIsEoaEnabled();
 
   // set wagmi active address depending on if eoa mode is enabled
@@ -242,11 +246,55 @@ export const useSetValidWagmiAddress = () => {
         wallet.connectorType === (isEoaEnabled ? "embedded" : "injected"),
     );
 
-    if (targetAddress && targetAddress.address !== address) {
-      console.log(`Setting active wallet to ${targetAddress.address}`);
-      setActiveWallet(targetAddress).then(() =>
+    // disconnect EOA from wagmi if EOA mode is disabled
+    if (!isEoaEnabled)
+      wallets.forEach((wallet) => {
+        if (wallet.connectorType === "embedded" && wallet.address === address) {
+          console.log("Disconnecting EOA wallet");
+          disconnect();
+        }
+      });
+
+    if (targetAddress?.address !== address) {
+      console.log(`Setting active wallet to ${targetAddress?.address}`);
+      setActiveWallet(targetAddress || undefined).then(() =>
         console.log("Active wallet set"),
       );
     }
   }, [address, wallets]);
+};
+
+export const useSendEnsoTransaction = (
+  amountIn: string,
+  tokenOut: Address,
+  tokenIn: Address,
+  slippage: number,
+) => {
+  const { address } = useAccount();
+  const chainId = useChainId();
+  const preparedData: RouteParams = {
+    fromAddress: address,
+    receiver: address,
+    spender: address,
+    chainId,
+    amountIn,
+    slippage,
+    tokenIn,
+    tokenOut,
+    routingStrategy: "router",
+  };
+
+  const { data: ensoData } = useEnsoRouterData(preparedData);
+  const tokenData = useTokenFromList(tokenOut);
+  const tokenFromData = useTokenFromList(tokenIn);
+
+  const sendTransaction = useExtendedSendTransaction(
+    `Purchase ${formatNumber(normalizeValue(+amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
+    ensoData?.tx,
+  );
+
+  return {
+    sendTransaction,
+    ensoData,
+  };
 };

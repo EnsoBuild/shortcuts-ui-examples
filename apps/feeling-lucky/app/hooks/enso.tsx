@@ -1,9 +1,9 @@
 import { Address } from "viem";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { ENSO_API_KEY } from "../constants";
-import { useExtendedSendTransaction, useNetworkId } from "./wallet";
-import { formatNumber, isAddress, normalizeValue } from "@enso/shared/util";
+import { useNetworkId } from "./wallet";
+import { isAddress } from "@enso/shared/util";
 import {
   EnsoClient,
   ApproveData,
@@ -12,7 +12,6 @@ import {
   QuoteData,
   QuoteParams,
 } from "@enso/sdk";
-import { useTokenFromList } from "./common";
 
 const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
 // const ENSO_BASE_URL = "http://localhost:3000/api/v1";
@@ -53,41 +52,6 @@ export const useEnsoRouterData = (params: RouteParams) => {
       isAddress(params.tokenIn) &&
       isAddress(params.tokenOut),
   });
-};
-
-export const useSendEnsoTransaction = (
-  amountIn: string,
-  tokenOut: Address,
-  tokenIn: Address,
-  slippage: number,
-) => {
-  const { address } = useAccount();
-  const chainId = useChainId();
-  const preparedData = {
-    fromAddress: address,
-    receiver: address,
-    spender: address,
-    chainId,
-    amountIn,
-    slippage,
-    tokenIn,
-    tokenOut,
-    routingStrategy: "router",
-  };
-  // @ts-ignore
-  const { data: ensoData } = useEnsoRouterData(preparedData);
-  const tokenData = useTokenFromList(tokenOut);
-  const tokenFromData = useTokenFromList(tokenIn);
-
-  const sendTransaction = useExtendedSendTransaction(
-    `Purchase ${formatNumber(normalizeValue(+amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
-    ensoData?.tx,
-  );
-
-  return {
-    sendTransaction,
-    ensoData,
-  };
 };
 
 export const useEnsoQuote = (params: QuoteParams) => {
