@@ -16,7 +16,7 @@ export const chakraTheme = extendTheme({
           bg: "gray.700",
           color: "white",
           _hover: {
-            bg: "brand.600",
+            bg: "blackAlpha.800",
           },
           _disabled: {
             bg: "gray.200",

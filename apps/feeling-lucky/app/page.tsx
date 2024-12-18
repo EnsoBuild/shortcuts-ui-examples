@@ -25,7 +25,7 @@ import {
   useNetworkId,
   useSendEnsoTransaction,
 } from "./hooks/wallet";
-import { useEnsoApprove } from "./hooks/enso";
+import { useEnsoApprove, useEnsoQuote } from "./hooks/enso";
 import {
   denormalizeValue,
   formatNumber,
@@ -54,7 +54,7 @@ const LuckyDeFi = () => {
   );
   const [selectedCategory, setSelectedCategory] = useState(Category.meme);
   const chainId = useNetworkId();
-  const tokenInData = useTokenFromList(tokenIn);
+  const tokenInInfo = useTokenFromList(tokenIn);
   const { switchChain } = useSwitchChain();
   const balance = useErc20Balance(tokenIn);
   const { ready } = usePrivy();
@@ -62,7 +62,7 @@ const LuckyDeFi = () => {
   const [swapValue, setSwapValue] = useState(10);
   const [revealed, setRevealed] = useState(false);
 
-  const swapAmount = denormalizeValue(swapValue, tokenInData?.decimals);
+  const swapAmount = denormalizeValue(swapValue, tokenInInfo?.decimals);
 
   const approveData = useEnsoApprove(tokenIn, swapAmount);
   const approve = useApproveIfNecessary(
@@ -84,14 +84,11 @@ const LuckyDeFi = () => {
     tokenIn,
     3000,
   );
-  const selectedMeme = useTokenFromList(randomMeme as Address);
+  const tokenOutInfo = useTokenFromList(randomMeme as Address);
 
   const wrongChain = chainId !== base.id;
   const notEnoughBalance = tokenIn && +balance < +swapAmount;
   const needLogin = ready && !address;
-  const exchangeRate =
-    normalizeValue(ensoData?.amountOut, selectedMeme?.decimals) / +swapValue;
-  const amountOut = normalizeValue(ensoData?.amountOut, selectedMeme?.decimals);
   const approveNeeded = !!approve && +swapAmount > 0 && !!tokenIn;
 
   const SpoilerComponent = useCallback(
@@ -106,6 +103,20 @@ const LuckyDeFi = () => {
     ),
     [revealed],
   );
+
+  const { data: quoteData } = useEnsoQuote({
+    chainId: base.id,
+    fromAddress: address,
+    amountIn: swapAmount,
+    tokenIn: tokenIn,
+    tokenOut: randomMeme,
+    routingStrategy: "router",
+  });
+  const valueOut = normalizeValue(
+    +quoteData?.amountOut,
+    tokenOutInfo?.decimals,
+  );
+  const exchangeRate = +valueOut / +swapValue;
 
   return (
     <Container py={8} h={"full"} alignContent={"center"} w={"full"}>
@@ -171,8 +182,8 @@ const LuckyDeFi = () => {
                     whiteSpace={"nowrap"}
                     visibility={address ? "visible" : "hidden"}
                   >
-                    Available: {normalizeValue(+balance, tokenInData?.decimals)}{" "}
-                    {tokenInData?.symbol}
+                    Available: {normalizeValue(+balance, tokenInInfo?.decimals)}{" "}
+                    {tokenInInfo?.symbol}
                   </Text>
                 </Flex>
                 <Input
@@ -199,7 +210,7 @@ const LuckyDeFi = () => {
                 <Heading as={"h6"} size={"md"} color="gray.500">
                   You will receive:{" "}
                   <SpoilerComponent>
-                    {formatNumber(amountOut)} {selectedMeme?.symbol}
+                    {formatNumber(valueOut)} {tokenOutInfo?.symbol}
                   </SpoilerComponent>
                 </Heading>
               </Center>
@@ -208,11 +219,8 @@ const LuckyDeFi = () => {
                 <Text color="gray.600">Exchange Rate:</Text>
                 <SpoilerComponent>
                   <Text>
-                    1 {tokenInData?.symbol} ={" "}
-                    {Number.isNaN(exchangeRate)
-                      ? 0.0
-                      : formatNumber(exchangeRate)}{" "}
-                    {selectedMeme?.symbol}
+                    1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate)}{" "}
+                    {tokenOutInfo?.symbol}
                   </Text>
                 </SpoilerComponent>
               </Flex>
@@ -263,7 +271,6 @@ const LuckyDeFi = () => {
                     variant="solid"
                     disabled={!!approve || wrongChain || !(+swapAmount > 0)}
                     width="100%"
-                    // _hover={{ bg: "blackAlpha.800" }}
                     isLoading={sendData.isLoading}
                     onClick={sendData.send}
                   >

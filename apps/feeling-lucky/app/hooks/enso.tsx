@@ -4,14 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ENSO_API_KEY } from "../constants";
 import { useNetworkId } from "./wallet";
 import { isAddress } from "@enso/shared/util";
-import {
-  EnsoClient,
-  ApproveData,
-  RouteParams,
-  RouteData,
-  QuoteData,
-  QuoteParams,
-} from "@enso/sdk";
+import { EnsoClient, RouteParams, QuoteParams } from "@enso/sdk";
 
 const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
 // const ENSO_BASE_URL = "http://localhost:3000/api/v1";
@@ -22,7 +15,7 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   const { address } = useAccount();
   const chainId = useNetworkId();
 
-  return useQuery<ApproveData>({
+  return useQuery({
     queryKey: ["enso-approval", tokenAddress, chainId, address, amount],
     queryFn: () =>
       ensoClient.getApprovalData({
@@ -36,7 +29,7 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
 };
 
 export const useEnsoRouterData = (params: RouteParams) => {
-  return useQuery<RouteData>({
+  return useQuery({
     queryKey: [
       "enso-router",
       params.chainId,
@@ -55,7 +48,7 @@ export const useEnsoRouterData = (params: RouteParams) => {
 };
 
 export const useEnsoQuote = (params: QuoteParams) => {
-  return useQuery<QuoteData>({
+  return useQuery({
     queryKey: [
       "enso-quote",
       params.chainId,

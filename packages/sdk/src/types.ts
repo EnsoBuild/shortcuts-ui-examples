@@ -71,14 +71,10 @@ export type RouteSegment = {
 export type QuoteParams = Omit<
   RouteParams,
   "spender" | "receiver" | "slippage"
-> & {
-  priceImpact: boolean; // Whether to calculate price impact.
-};
+>;
 
 export type QuoteData = {
   amountOut: string;
   route: RouteSegment[];
   gas: string;
 };
-
-

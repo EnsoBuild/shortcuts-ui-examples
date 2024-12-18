@@ -18,7 +18,7 @@ const formatter = Intl.NumberFormat("en", {
 });
 
 export const formatNumber = (value: number | string) =>
-  formatter.format(+Number(value));
+  isNaN(+value) ? "0.0" : formatter.format(+value);
 
 export const isAddress = (address: string) =>
   /^0x[a-fA-F0-9]{40}$/.test(address);
