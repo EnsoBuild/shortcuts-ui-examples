@@ -75,6 +75,6 @@ export type QuoteParams = Omit<
 
 export type QuoteData = {
   amountOut: string;
-  route: RouteSegment[];
   gas: string;
+  priceImpact: number;
 };

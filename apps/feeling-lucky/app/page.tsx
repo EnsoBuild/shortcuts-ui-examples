@@ -230,7 +230,7 @@ const LuckyDeFi = () => {
                 <Flex justify="space-between">
                   <Text color="gray.600">Gas:</Text>
                   <Text>
-                    {normalizeValue(quoteData?.gas ?? 0, 18).toFixed(2)} ETH
+                    {normalizeValue(+(quoteData?.gas ?? 0), 18).toFixed(2)} ETH
                   </Text>
                 </Flex>
               </VStack>
