@@ -19,11 +19,11 @@ import { useSetActiveWallet } from "@privy-io/wagmi";
 import { BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { useIsEoaEnabled, useTokenFromList } from "./common";
-import { formatNumber, normalizeValue } from "@enso/shared/util";
 import erc20Abi from "../../erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
-import { Address } from "@enso/shared/types";
+import { formatNumber, normalizeValue } from "@enso/shared/util";
 import { RouteParams } from "@enso/sdk";
+import { Address } from "@enso/shared/types";
 
 enum TxState {
   Success,

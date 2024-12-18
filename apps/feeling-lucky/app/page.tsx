@@ -78,7 +78,7 @@ const LuckyDeFi = () => {
     return selectedList[index] as Address;
   }, [selectedCategory]);
 
-  const { sendTransaction: sendData, ensoData } = useSendEnsoTransaction(
+  const { sendTransaction: sendData } = useSendEnsoTransaction(
     swapAmount,
     randomMeme,
     tokenIn,
