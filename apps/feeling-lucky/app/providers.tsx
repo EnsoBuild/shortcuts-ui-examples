@@ -23,7 +23,7 @@ export function Providers({ children }) {
       logo: "/big-logo.svg",
       walletChainType: "ethereum-only",
     },
-    loginMethods: ["wallet", "telegram", "google"],
+    loginMethods: ["wallet", "telegram"],
     embeddedWallets: isEoaMode() ? { createOnLogin: "all-users" } : undefined,
   });
 

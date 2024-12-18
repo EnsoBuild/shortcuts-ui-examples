@@ -247,13 +247,14 @@ export const useSetValidWagmiAddress = () => {
     );
 
     // disconnect EOA from wagmi if EOA mode is disabled
-    if (!isEoaEnabled)
-      wallets.forEach((wallet) => {
-        if (wallet.connectorType === "embedded" && wallet.address === address) {
-          console.log("Disconnecting EOA wallet");
-          disconnect();
-        }
-      });
+    // if (!isEoaEnabled)
+    //   wallets.forEach((wallet) => {
+    //     if (wallet.connectorType === "embedded" && wallet.address === address) {
+    //       console.log("Disconnecting EOA wallet");
+    //       disconnect();
+    //     }
+    //   });
+
 
     if (targetAddress?.address !== address) {
       console.log(`Setting active wallet to ${targetAddress?.address}`);
