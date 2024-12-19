@@ -21,9 +21,9 @@ import { usePrivy } from "@privy-io/react-auth";
 import { Spoiler } from "spoiled";
 import {
   useApproveIfNecessary,
-  useErc20Balance,
   useNetworkId,
   useSendEnsoTransaction,
+  useTokenBalance,
 } from "./hooks/wallet";
 import { useEnsoApprove, useEnsoQuote } from "./hooks/enso";
 import {
@@ -56,7 +56,7 @@ const LuckyDeFi = () => {
   const chainId = useNetworkId();
   const tokenInInfo = useTokenFromList(tokenIn);
   const { switchChain } = useSwitchChain();
-  const balance = useErc20Balance(tokenIn);
+  const balance = useTokenBalance(tokenIn);
   const { ready } = usePrivy();
   const { address } = useAccount();
   const [swapValue, setSwapValue] = useState(10);
@@ -177,7 +177,9 @@ const LuckyDeFi = () => {
                       visibility={address ? "visible" : "hidden"}
                     >
                       Available:{" "}
-                      {normalizeValue(+balance, tokenInInfo?.decimals)}{" "}
+                      {formatNumber(
+                        normalizeValue(+balance, tokenInInfo?.decimals),
+                      )}{" "}
                       {tokenInInfo?.symbol}
                     </Text>
                   </Flex>

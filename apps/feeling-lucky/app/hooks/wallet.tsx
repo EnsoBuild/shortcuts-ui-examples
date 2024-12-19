@@ -12,6 +12,7 @@ import {
   UseWriteContractReturnType,
   useBlockNumber,
   useDisconnect,
+  useBalance,
 } from "wagmi";
 import { enqueueSnackbar } from "notistack";
 import { useWallets } from "@privy-io/react-auth";
@@ -24,6 +25,7 @@ import { useEnsoRouterData } from "./enso";
 import { formatNumber, normalizeValue } from "@enso/shared/util";
 import { RouteParams } from "@enso/sdk";
 import { Address } from "@enso/shared/types";
+import { ETH_ADDRESS } from "../constants";
 
 enum TxState {
   Success,
@@ -38,15 +40,25 @@ const toastState: Record<TxState, "success" | "error" | "info"> = {
 };
 
 export const useErc20Balance = (tokenAddress: `0x${string}`) => {
+  console.log(tokenAddress, "tokenAddress");
   const { address } = useAccount();
-  const { data } = useReadContract({
+  return useReadContract({
     address: tokenAddress,
     abi: erc20Abi,
     functionName: "balanceOf",
     args: [address],
   });
+};
 
-  return data?.toString() ?? "0";
+// if token is native ETH, use usBalance instead
+export const useTokenBalance = (token: Address) => {
+  const { address } = useAccount();
+  const { data: erc20Balance } = useErc20Balance(token);
+  const { data: balance } = useBalance({ address });
+
+  const value = token === ETH_ADDRESS ? balance?.value : erc20Balance;
+
+  return value?.toString() ?? "0";
 };
 
 export const useAllowance = (token: Address, spender: Address) => {
@@ -221,6 +233,8 @@ export const useApproveIfNecessary = (
     approveData.args,
   );
 
+  if (tokenIn === ETH_ADDRESS) return undefined;
+
   return +allowance < +amount ? writeApprove : undefined;
 };
 
@@ -254,7 +268,6 @@ export const useSetValidWagmiAddress = () => {
     //       disconnect();
     //     }
     //   });
-
 
     if (targetAddress?.address !== address) {
       console.log(`Setting active wallet to ${targetAddress?.address}`);
