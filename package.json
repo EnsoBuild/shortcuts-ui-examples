@@ -1,13 +1,9 @@
 {
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
-    "fl:dev": "yarn workspace @enso/feeling-lucky dev",
-    "sdk:dev": "yarn workspace @enso/sdk dev",
-    "sdk:build": "yarn workspace @enso/sdk build"
+    "fl:dev": "pnpm --filter @enso/feeling-lucky dev",
+    "sdk:dev": "pnpm --filter  @enso/sdk dev",
+    "sdk:build": "pnpm --filter  @enso/sdk build"
   },
   "name": "ense-apps-monorepo",
   "version": "1.0.0",

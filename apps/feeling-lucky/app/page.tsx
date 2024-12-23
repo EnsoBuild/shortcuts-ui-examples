@@ -2,17 +2,15 @@
 
 import {
   Box,
-  Button,
   Container,
   Flex,
   Heading,
-  Input,
-  Tab,
-  TabList,
-  Tabs,
   Text,
   VStack,
   Center,
+  Input,
+  HStack,
+  RadioCard,
 } from "@chakra-ui/react";
 import { base } from "viem/chains";
 import { useCallback, useMemo, useState } from "react";
@@ -33,10 +31,12 @@ import {
 } from "@enso/shared/util";
 import { DEFI_LIST, MEMES_LIST, USDC_ADDRESSES } from "./constants";
 import { useTokenFromList } from "./hooks/common";
-import TokenSelector from "./components/TokenSelector";
-import WalletButton from "./components/WalletButton";
-import EoaModeSelector from "./components/EoaModeSelector";
+import TokenSelector from "../components/TokenSelector";
+import WalletButton from "../components/WalletButton";
+// import EoaModeSelector from "./components/EoaModeSelector";
 import { Address } from "@enso/shared/types";
+import { Button } from "@/components/ui/button";
+import { ColorModeButton } from "@/components/ui/color-mode";
 
 enum Category {
   defi,
@@ -52,7 +52,9 @@ const LuckyDeFi = () => {
   const [tokenIn, setTokenIn] = useState<Address>(
     USDC_ADDRESSES[base.id] as Address,
   );
-  const [selectedCategory, setSelectedCategory] = useState(Category.meme);
+  const [selectedCategory, setSelectedCategory] = useState(
+    Category.meme.toString(),
+  );
   const chainId = useNetworkId();
   const tokenInInfo = useTokenFromList(tokenIn);
   const { switchChain } = useSwitchChain();
@@ -121,13 +123,14 @@ const LuckyDeFi = () => {
   return (
     <Container py={8} h={"full"} w={"full"}>
       <Flex justify="space-around" w={"full"}>
-        <EoaModeSelector />
+        {/*<EoaModeSelector />*/}
+        <ColorModeButton />
 
         <WalletButton />
       </Flex>
 
       <Center h={"full"}>
-        <VStack spacing={4} align="flex-start" mt={-100}>
+        <VStack gap={4} align="flex-start" mt={-100}>
           <Heading size="lg" textAlign="center">
             I'm feeling lucky
           </Heading>
@@ -136,31 +139,43 @@ const LuckyDeFi = () => {
           </Text>
 
           <Box borderWidth={1} borderRadius="lg" w="container.sm" p={4}>
-            <Tabs
-              variant="soft-rounded"
-              colorScheme="gray"
+            <RadioCard.Root
+              variant={"subtle"}
+              colorPalette={"gray"}
+              size={"sm"}
               mb={4}
-              onChange={(index) =>
-                setSelectedCategory(
-                  (index as unknown as number) === 0
-                    ? Category.meme
-                    : Category.defi,
-                )
-              }
+              value={selectedCategory}
             >
-              <TabList>
-                <Tab borderRadius={2}>Memes</Tab>
-                <Tab borderRadius={2}>DeFi</Tab>
-              </TabList>
-            </Tabs>
+              <HStack align="stretch" w={150}>
+                {Object.keys(CategoryList).map((key) => (
+                  <RadioCard.Item
+                    display={"flex"}
+                    w={"full"}
+                    key={key}
+                    value={key}
+                    border={"none"}
+                    onClick={() => setSelectedCategory(key.toString())}
+                    alignItems={"center"}
+                  >
+                    <RadioCard.ItemHiddenInput />
+                    <RadioCard.ItemControl minW={"80px"} justifyContent={"center"}>
+                      <RadioCard.ItemText>
+                        {Category[key][0].toUpperCase() +
+                          Category[key].slice(1)}
+                      </RadioCard.ItemText>
+                    </RadioCard.ItemControl>
+                  </RadioCard.Item>
+                ))}
+              </HStack>
+            </RadioCard.Root>
 
             <Box position="relative">
-              <Text fontSize="sm" mb={2} color="gray.500">
+              <Text fontSize="sm" color="gray.500">
                 Swap from:
               </Text>
               <Flex align="center" mb={4}>
                 <Flex
-                  border="1px"
+                  border="solid 1px"
                   borderColor="gray.200"
                   borderRadius="md"
                   p={2}
@@ -186,7 +201,9 @@ const LuckyDeFi = () => {
                   <Input
                     type="number"
                     fontSize="xl"
-                    variant="unstyled"
+                    // variant="subtle"
+                    border={"none"}
+                    outline={"none"}
                     placeholder="0.0"
                     textAlign="right"
                     value={swapValue}
@@ -202,7 +219,7 @@ const LuckyDeFi = () => {
                 {/*/>*/}
               </Flex>
 
-              <VStack align="stretch" spacing={3}>
+              <VStack align="stretch" gap={3}>
                 <Center>
                   <Heading as={"h6"} size={"md"} color="gray.500">
                     You will receive:{" "}
@@ -244,9 +261,8 @@ const LuckyDeFi = () => {
                   <Flex w={"full"} gap={4}>
                     {wrongChain ? (
                       <Button
-                        width="100%"
-                        bg="gray.700"
-                        _hover={{ bg: "blackAlpha.800" }}
+                        bg="gray.solid"
+                        _hover={{ bg: "blackAlpha.solid" }}
                         onClick={() => switchChain({ chainId: base.id })}
                       >
                         Switch to Base
@@ -254,10 +270,9 @@ const LuckyDeFi = () => {
                     ) : (
                       approveNeeded && (
                         <Button
-                          isLoading={approve.isLoading}
-                          width="100%"
-                          bg="gray.700"
-                          _hover={{ bg: "blackAlpha.800" }}
+                          flex={1}
+                          loading={approve.isLoading}
+                          colorPalette={"gray"}
                           onClick={approve.write}
                         >
                           Approve
@@ -265,10 +280,11 @@ const LuckyDeFi = () => {
                       )
                     )}
                     <Button
+                      flex={1}
                       variant="solid"
                       disabled={!!approve || wrongChain || !(+swapAmount > 0)}
-                      width="100%"
-                      isLoading={sendData.isLoading}
+                      colorPalette={"gray"}
+                      loading={sendData.isLoading}
                       onClick={sendData.send}
                     >
                       I'm feeling lucky

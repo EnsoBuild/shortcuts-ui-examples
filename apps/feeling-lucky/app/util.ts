@@ -1,8 +1,3 @@
-export const isEoaMode = () =>
-  typeof window !== "undefined" &&
-  !JSON.parse(localStorage.getItem("eoaEnabled"));
-
-export const toggleIsEoaMode = () => {
-  localStorage.setItem("eoaEnabled", JSON.stringify(isEoaMode()));
-  window.location.reload();
-};
+// check env
+const eaoDisabled = JSON.parse(process.env.NEXT_PUBLIC_EOA_DISABLED ?? "false");
+export const isEoaMode = !eaoDisabled;
