@@ -1,18 +1,17 @@
 "use client";
 
 import { useRef } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Provider as ChakraProvider } from "../components/ui/provider";
 import { PrivyClientConfig, PrivyProvider } from "@privy-io/react-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "@privy-io/wagmi";
 import { SnackbarProvider } from "notistack";
-import { chakraTheme, wagmiConfig } from "./config";
+import { ColorModeProvider } from "@/components/ui/color-mode";
+import { wagmiConfig } from "./config";
 import { isEoaMode } from "./util";
-import Watchers from "./components/Watchers";
 
 const queryClient = new QueryClient();
 const PRIVY_KEY = process.env.NEXT_PUBLIC_PRIVY_KEY;
-
 
 export function Providers({ children }) {
   // has to be set up in component to get access to client's localStorage
@@ -24,7 +23,7 @@ export function Providers({ children }) {
       walletChainType: "ethereum-only",
     },
     loginMethods: ["wallet", "telegram"],
-    embeddedWallets: isEoaMode() ? { createOnLogin: "all-users" } : undefined,
+    embeddedWallets: isEoaMode ? undefined : { createOnLogin: "all-users" },
   });
 
   return (
@@ -32,8 +31,8 @@ export function Providers({ children }) {
       <SnackbarProvider>
         <QueryClientProvider client={queryClient}>
           <WagmiProvider config={wagmiConfig}>
-            <ChakraProvider theme={chakraTheme}>
-              <Watchers>{children}</Watchers>
+            <ChakraProvider>
+              <ColorModeProvider>{children}</ColorModeProvider>
             </ChakraProvider>
           </WagmiProvider>
         </QueryClientProvider>

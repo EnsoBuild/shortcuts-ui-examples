@@ -1,10 +1,8 @@
-import { useMemo } from "react";
-import { isEoaMode } from "../util";
 import { Address } from "@enso/shared/types";
 import { useQuery } from "@tanstack/react-query";
 import { ETH_ADDRESS, ETH_TOKEN } from "../constants";
 
-type Token = {
+export type Token = {
   address: Address;
   name: string;
   symbol: string;
@@ -29,8 +27,6 @@ export const useOneInchTokenList = () =>
     queryKey: ["oneInchTokenList"],
     queryFn: getOneInchTokenList,
   });
-
-export const useIsEoaEnabled = () => useMemo(isEoaMode, []);
 
 export const useTokenFromList = (tokenAddress: Address) => {
   const { data } = useGeckoList();

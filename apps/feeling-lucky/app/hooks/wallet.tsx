@@ -19,7 +19,7 @@ import { useWallets } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { useIsEoaEnabled, useTokenFromList } from "./common";
+import { useTokenFromList } from "./common";
 import erc20Abi from "../../erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
 import { formatNumber, normalizeValue } from "@enso/shared/util";
@@ -244,38 +244,6 @@ export const useNetworkId = () => {
   const activeWallet = wallets?.find((wallet) => wallet.address === address);
 
   return +activeWallet?.chainId.split(":")[1];
-};
-
-export const useSetValidWagmiAddress = () => {
-  const { address } = useAccount();
-  const { wallets } = useWallets();
-  const { setActiveWallet } = useSetActiveWallet();
-  const { disconnect } = useDisconnect();
-  const isEoaEnabled = useIsEoaEnabled();
-
-  // set wagmi active address depending on if eoa mode is enabled
-  useEffect(() => {
-    const targetAddress = wallets.find(
-      (wallet) =>
-        wallet.connectorType === (isEoaEnabled ? "embedded" : "injected"),
-    );
-
-    // disconnect EOA from wagmi if EOA mode is disabled
-    // if (!isEoaEnabled)
-    //   wallets.forEach((wallet) => {
-    //     if (wallet.connectorType === "embedded" && wallet.address === address) {
-    //       console.log("Disconnecting EOA wallet");
-    //       disconnect();
-    //     }
-    //   });
-
-    if (targetAddress?.address !== address) {
-      console.log(`Setting active wallet to ${targetAddress?.address}`);
-      setActiveWallet(targetAddress || undefined).then(() =>
-        console.log("Active wallet set"),
-      );
-    }
-  }, [address, wallets]);
 };
 
 export const useSendEnsoTransaction = (
