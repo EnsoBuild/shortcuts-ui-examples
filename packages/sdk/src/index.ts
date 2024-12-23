@@ -6,6 +6,7 @@ import {
   RouteData,
   QuoteData,
   QuoteParams,
+  BalanceParams,
 } from "./types";
 
 export {
@@ -41,18 +42,25 @@ export class EnsoClient {
   public async getApprovalData(params: ApproveParams) {
     const url = "/wallet/approve";
 
+    if (!params.routingStrategy) {
+      params.routingStrategy = "router";
+    }
+
     return this.request<ApproveData>({
       url,
       method: "GET",
       params: {
         ...params,
-        routingStrategy: "router",
       },
     });
   }
 
   public async getRouterData(params: RouteParams) {
     const url = "/shortcuts/route";
+
+    if (!params.routingStrategy) {
+      params.routingStrategy = "router";
+    }
 
     return this.request<RouteData>({
       method: "GET",
@@ -63,6 +71,20 @@ export class EnsoClient {
 
   public async getQuoteData(params: QuoteParams) {
     const url = "/shortcuts/quote";
+
+    return this.request<QuoteData>({
+      method: "GET",
+      url,
+      params,
+    });
+  }
+
+  public async getBalances(params: BalanceParams) {
+    const url = "/wallet/balances";
+
+    if (typeof params.useEoa === "undefined") {
+      params.useEoa = true;
+    }
 
     return this.request<QuoteData>({
       method: "GET",

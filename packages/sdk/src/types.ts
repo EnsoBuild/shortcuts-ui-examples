@@ -11,20 +11,22 @@ export type RouteParams = {
   slippage?: number;
   tokenIn: Address;
   tokenOut: Address;
-  routingStrategy: RoutingStrategy;
+  routingStrategy?: RoutingStrategy;
   fee?: number;
   feeReceiver?: Address;
 };
 
+export type RouteSegment = {
+  action: string;
+  protocol: string;
+  tokenIn: string[];
+  tokenOut: string[];
+  positionInId: string[];
+  positionOutId: string[];
+};
+
 export type RouteData = {
-  route: {
-    tokenIn: string;
-    positionInId: string;
-    tokenOut: string;
-    positionOutId: string;
-    protocol: string;
-    action: string;
-  }[];
+  route: RouteSegment[];
   gas: number; // Estimated gas used by the transaction. Increase by 50% as a buffer.
   amountOut: number; // Estimated amount received.
   priceImpact: number | null; // Price impact in basis points, null if USD price not found.
@@ -45,6 +47,7 @@ export type ApproveParams = {
   tokenAddress: string;
   chainId: number;
   amount: string;
+  routingStrategy?: RoutingStrategy;
 };
 
 export type ApproveData = {
@@ -59,15 +62,6 @@ export type ApproveData = {
   };
 };
 
-export type RouteSegment = {
-  action: string;
-  protocol: string;
-  tokenIn: string[];
-  tokenOut: string[];
-  positionInId: string[];
-  positionOutId: string[];
-};
-
 export type QuoteParams = Omit<
   RouteParams,
   "spender" | "receiver" | "slippage"
@@ -77,4 +71,17 @@ export type QuoteData = {
   amountOut: string;
   gas: string;
   priceImpact: number;
+};
+
+export type BalanceParams = {
+  chainId: number;
+  eoaAddress: Address;
+  useEoa?: boolean;
+};
+
+export type BalanceData = {
+  amount: string;
+  decimals: number;
+  token: Address;
+  price: string;
 };
