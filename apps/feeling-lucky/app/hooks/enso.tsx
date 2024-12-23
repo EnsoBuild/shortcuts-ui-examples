@@ -3,13 +3,13 @@ import { useAccount } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { ENSO_API_KEY } from "../constants";
 import { useNetworkId } from "./wallet";
-import { isAddress } from "@enso/shared/util";
-import { EnsoClient, RouteParams, QuoteParams } from "@enso/sdk";
+import { isAddress } from "@ensofinance/shared/util";
+import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 
-const ENSO_BASE_URL = "https://api.enso.finance/api/v1";
-// const ENSO_BASE_URL = "http://localhost:3000/api/v1";
-
-const ensoClient = new EnsoClient(ENSO_BASE_URL, ENSO_API_KEY);
+const ensoClient = new EnsoClient({
+  // baseURL: "http://localhost:3000/api/v1",
+  apiKey: ENSO_API_KEY,
+});
 
 export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   const { address } = useAccount();

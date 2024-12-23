@@ -1,4 +1,4 @@
-import { Address } from "@enso/shared/types";
+import { Address } from "@ensofinance/shared/types";
 
 export type RoutingStrategy = "router" | "delegate" | "ensowallet";
 
@@ -8,11 +8,12 @@ export type RouteParams = {
   spender: Address;
   chainId: number;
   amountIn: string;
-  slippage?: number;
+  slippage?: number; // Slippage in basis points (1/10000). If specified, minAmountOut should not be specified
+  minAmountOut?: string;
   tokenIn: Address;
   tokenOut: Address;
   routingStrategy?: RoutingStrategy;
-  fee?: number;
+  fee?: number; // Fee in basis points (1/10000) for each amountIn value. Must be in range 0-100. If specified, this percentage of each amountIn value will be sent to feeReceiver
   feeReceiver?: Address;
 };
 

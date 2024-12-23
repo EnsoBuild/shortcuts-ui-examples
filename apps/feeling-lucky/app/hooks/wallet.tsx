@@ -22,9 +22,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTokenFromList } from "./common";
 import erc20Abi from "../../erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
-import { formatNumber, normalizeValue } from "@enso/shared/util";
-import { RouteParams } from "@enso/sdk";
-import { Address } from "@enso/shared/types";
+import { formatNumber, normalizeValue } from "@ensofinance/shared/util";
+import { RouteParams } from "@ensofinance/sdk";
+import { Address } from "@ensofinance/shared/types";
 import { ETH_ADDRESS } from "../constants";
 
 enum TxState {

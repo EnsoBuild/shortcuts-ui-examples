@@ -7,6 +7,7 @@ import {
   QuoteData,
   QuoteParams,
   BalanceParams,
+  BalanceData,
 } from "./types";
 
 export {
@@ -18,10 +19,18 @@ export {
   QuoteParams,
 };
 
+const DEFAULT_BASE_URL = "https://api.enso.finance/api/v1";
+
 export class EnsoClient {
   private client: AxiosInstance;
 
-  constructor(baseURL: string, apiKey: string) {
+  constructor({
+    baseURL = DEFAULT_BASE_URL,
+    apiKey,
+  }: {
+    baseURL?: string;
+    apiKey: string;
+  }) {
     this.client = axios.create({
       baseURL,
       headers: {
@@ -39,6 +48,7 @@ export class EnsoClient {
     }
   }
 
+  // Method to get approval data to spend a token
   public async getApprovalData(params: ApproveParams) {
     const url = "/wallet/approve";
 
@@ -49,12 +59,11 @@ export class EnsoClient {
     return this.request<ApproveData>({
       url,
       method: "GET",
-      params: {
-        ...params,
-      },
+      params,
     });
   }
 
+  // Method to get execution data for best route from a token to another
   public async getRouterData(params: RouteParams) {
     const url = "/shortcuts/route";
 
@@ -69,6 +78,7 @@ export class EnsoClient {
     });
   }
 
+  // Method to quote swap from a token to another even if the user doesn't have the token or approve
   public async getQuoteData(params: QuoteParams) {
     const url = "/shortcuts/quote";
 
@@ -79,6 +89,7 @@ export class EnsoClient {
     });
   }
 
+  // Method to get wallet balances per chain
   public async getBalances(params: BalanceParams) {
     const url = "/wallet/balances";
 
@@ -86,7 +97,7 @@ export class EnsoClient {
       params.useEoa = true;
     }
 
-    return this.request<QuoteData>({
+    return this.request<BalanceData>({
       method: "GET",
       url,
       params,

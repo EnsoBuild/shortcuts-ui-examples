@@ -28,13 +28,13 @@ import {
   denormalizeValue,
   formatNumber,
   normalizeValue,
-} from "@enso/shared/util";
+} from "@ensofinance/shared/util";
 import { DEFI_LIST, MEMES_LIST, USDC_ADDRESSES } from "./constants";
 import { useTokenFromList } from "./hooks/common";
 import TokenSelector from "../components/TokenSelector";
 import WalletButton from "../components/WalletButton";
 // import EoaModeSelector from "./components/EoaModeSelector";
-import { Address } from "@enso/shared/types";
+import { Address } from "@ensofinance/shared/types";
 import { Button } from "@/components/ui/button";
 import { ColorModeButton } from "@/components/ui/color-mode";
 

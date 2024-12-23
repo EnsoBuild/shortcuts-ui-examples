@@ -1,5 +1,5 @@
 {
-  "name": "@enso/feeling-lucky",
+  "name": "@ensofinance/feeling-lucky",
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev -p 4000",
@@ -11,8 +11,8 @@
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^3.2.3",
     "@emotion/react": "^11.13.5",
-    "@enso/sdk": "workspace:*",
-    "@enso/shared": "workspace:*",
+    "@ensofinance/sdk": "workspace:*",
+    "@ensofinance/shared": "workspace:*",
     "@privy-io/react-auth": "^1.95.0",
     "@privy-io/wagmi": "^0.2.12",
     "@solana/web3.js": "^1.95.5",
