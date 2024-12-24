@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "fl:dev": "pnpm --filter @ensofinance/feeling-lucky dev",
+    "fl:dev": "pnpm --filter @enso/feeling-lucky dev",
     "sdk:dev": "pnpm --filter  @ensofinance/sdk dev",
     "sdk:build": "pnpm --filter  @ensofinance/sdk build"
   },

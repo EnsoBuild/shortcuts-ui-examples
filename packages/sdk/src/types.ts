@@ -1,6 +1,7 @@
-import { Address } from "@ensofinance/shared/types";
-
 export type RoutingStrategy = "router" | "delegate" | "ensowallet";
+
+// consider importing from shared if more types come
+export type Address = `0x${string}`;
 
 export type RouteParams = {
   fromAddress: Address;

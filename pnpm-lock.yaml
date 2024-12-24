@@ -90,9 +90,6 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@ensofinance/shared':
-        specifier: workspace:*
-        version: link:../shared
       axios:
         specifier: ^1.7.9
         version: 1.7.9

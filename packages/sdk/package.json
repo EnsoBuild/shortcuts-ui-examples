@@ -1,7 +1,9 @@
 {
   "name": "@ensofinance/sdk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "SDK for interacting with the Enso API",
+  "author": "Enso Finance",
+  "homepage": "https://www.enso.finance/",
   "main": "dist/index.js",
   "module": "dist/index.cjs",
   "types": "dist/index.d.ts",
@@ -10,6 +12,9 @@
     "build": "tsup",
     "test": "jest",
     "prepare": "npm run build"
+  },
+  "repository": {
+    "url": "https://github.com/EnsoFinance/shortcuts-ui-examples/tree/main/packages/sdk"
   },
   "type": "module",
   "exports": {
@@ -20,7 +25,6 @@
     }
   },
   "dependencies": {
-    "@ensofinance/shared": "workspace:*",
     "axios": "^1.7.9"
   },
   "devDependencies": {
