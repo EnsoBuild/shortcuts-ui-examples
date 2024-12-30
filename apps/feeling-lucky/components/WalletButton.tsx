@@ -3,7 +3,7 @@ import { Box, Button } from "@chakra-ui/react";
 import { usePrivy } from "@privy-io/react-auth";
 import { UserPill } from "@privy-io/react-auth/ui";
 import { shortenAddress } from "@ensofinance/shared/util";
-import { isEoaMode } from "@/app/util";
+import { isEoaMode } from "@/util/util";
 
 const WalletButton = () => {
   const { address } = useAccount();

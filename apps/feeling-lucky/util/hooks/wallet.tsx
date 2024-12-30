@@ -19,12 +19,12 @@ import { useWallets } from "@privy-io/react-auth";
 import { useSetActiveWallet } from "@privy-io/wagmi";
 import { BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { useTokenFromList } from "./common";
-import erc20Abi from "../../erc20Abi.json";
-import { useEnsoRouterData } from "./enso";
 import { formatNumber, normalizeValue } from "@ensofinance/shared/util";
 import { RouteParams } from "@ensofinance/sdk";
 import { Address } from "@ensofinance/shared/types";
+import { useTokenFromList } from "./common";
+import erc20Abi from "../../erc20Abi.json";
+import { useEnsoRouterData } from "./enso";
 import { ETH_ADDRESS } from "../constants";
 
 enum TxState {

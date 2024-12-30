@@ -7,8 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "@privy-io/wagmi";
 import { SnackbarProvider } from "notistack";
 import { ColorModeProvider } from "@/components/ui/color-mode";
-import { wagmiConfig } from "./config";
-import { isEoaMode } from "./util";
+import { wagmiConfig } from "@/util/config";
+import { isEoaMode } from "@/util/util";
 
 const queryClient = new QueryClient();
 const PRIVY_KEY = process.env.NEXT_PUBLIC_PRIVY_KEY;

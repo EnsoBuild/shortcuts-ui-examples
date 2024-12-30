@@ -22,18 +22,17 @@ import {
   useNetworkId,
   useSendEnsoTransaction,
   useTokenBalance,
-} from "./hooks/wallet";
-import { useEnsoApprove, useEnsoQuote } from "./hooks/enso";
+} from "@/util/hooks/wallet";
+import { useEnsoApprove, useEnsoQuote } from "@/util/hooks/enso";
 import {
   denormalizeValue,
   formatNumber,
   normalizeValue,
 } from "@ensofinance/shared/util";
-import { DEFI_LIST, MEMES_LIST, USDC_ADDRESSES } from "./constants";
-import { useTokenFromList } from "./hooks/common";
-import TokenSelector from "../components/TokenSelector";
-import WalletButton from "../components/WalletButton";
-// import EoaModeSelector from "./components/EoaModeSelector";
+import { DEFI_LIST, MEMES_LIST, USDC_ADDRESSES } from "@/util/constants";
+import { useTokenFromList } from "@/util/hooks/common";
+import TokenSelector from "@/components/TokenSelector";
+import WalletButton from "@/components/WalletButton";
 import { Address } from "@ensofinance/shared/types";
 import { Button } from "@/components/ui/button";
 import { ColorModeButton } from "@/components/ui/color-mode";
@@ -199,7 +198,6 @@ const LuckyDeFi = () => {
                     </Text>
                   </Flex>
                   <Input
-                    type="number"
                     fontSize="xl"
                     // variant="subtle"
                     border={"none"}

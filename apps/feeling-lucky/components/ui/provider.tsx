@@ -5,7 +5,7 @@ import {
   ColorModeProvider,
   type ColorModeProviderProps,
 } from "./color-mode"
-import {chakraTheme} from "@/app/config";
+import {chakraTheme} from "@/util/config";
 
 export function Provider(props: ColorModeProviderProps) {
   return (
