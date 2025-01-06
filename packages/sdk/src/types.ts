@@ -87,3 +87,40 @@ export type BalanceData = {
   token: Address;
   price: string;
 };
+
+export type TokenParams = {
+  address: Address;
+  includeMetadata?: boolean;
+  chainId: number;
+};
+
+export type Token = {
+  address: Address;
+  chainId: number;
+  decimals: number;
+  name: string;
+  symbol: string;
+  logosUri: string[];
+  type: "defi" | "base";
+};
+
+// put above object into type
+export type TokenData = Token & {
+  protocolSlug: string;
+  underlyingTokens: Token[];
+  primaryAddress: Address;
+  apy: number | null;
+};
+
+export type PriceParams = {
+  chainId: number;
+  address: Address;
+};
+
+export type PriceData = {
+  price: string; // 3614.8
+  decimals: number; // 18
+  symbol: string;
+  timestamp: number;
+  confidence: number; // 0.99 means 99% confidence
+};

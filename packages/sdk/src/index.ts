@@ -8,6 +8,10 @@ import {
   QuoteParams,
   BalanceParams,
   BalanceData,
+  TokenParams,
+  TokenData,
+  PriceData,
+  PriceParams,
 } from "./types";
 
 export {
@@ -97,10 +101,33 @@ export class EnsoClient {
       params.useEoa = true;
     }
 
-    return this.request<BalanceData>({
+    return this.request<BalanceData[]>({
       method: "GET",
       url,
       params,
+    });
+  }
+
+  // Method to get token data by address
+  public async getTokenData(params: TokenParams) {
+    const url = `/tokens`;
+    // @ts-ignore
+    params.page = 1;
+
+    return this.request<{ data: TokenData[] }>({
+      method: "GET",
+      url,
+      params,
+    });
+  }
+
+  // Method to get token price data
+  public async getPriceData(params: PriceParams) {
+    const url = `/prices/${params.chainId}/${params.address}`;
+
+    return this.request<PriceData>({
+      method: "GET",
+      url,
     });
   }
 }
