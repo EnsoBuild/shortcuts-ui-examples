@@ -21,10 +21,12 @@ export type RouteParams = {
 export type RouteSegment = {
   action: string;
   protocol: string;
-  tokenIn: string[];
-  tokenOut: string[];
-  positionInId: string[];
-  positionOutId: string[];
+  primary?: Address;
+  tokenIn: Address[];
+  tokenOut: Address[];
+  positionInId?: string[];
+  positionOutId?: string[];
+  internalRoutes?: RouteSegment[][];
 };
 
 export type RouteData = {
@@ -35,8 +37,8 @@ export type RouteData = {
   createdAt: number; // Block number the transaction was created on.
   tx: {
     data: string;
-    to: string;
-    from: string;
+    to: Address;
+    from: Address;
     value: string;
   };
   feeAmount: {
@@ -45,8 +47,8 @@ export type RouteData = {
 };
 
 export type ApproveParams = {
-  fromAddress: string;
-  tokenAddress: string;
+  fromAddress: Address;
+  tokenAddress: Address;
   chainId: number;
   amount: string;
   routingStrategy?: RoutingStrategy;
