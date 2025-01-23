@@ -1,18 +1,12 @@
 import { useAccount, useDisconnect } from "wagmi";
-import { Box, Button } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { usePrivy } from "@privy-io/react-auth";
-import { UserPill } from "@privy-io/react-auth/ui";
 import { shortenAddress } from "@ensofinance/shared/util";
-import { isEoaMode } from "@/util/util";
 
 const WalletButton = () => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const { connectWallet } = usePrivy();
-
-  if (!isEoaMode) {
-    return <Box w={"150px"}><UserPill action={{ type: "login" }} /></Box>
-  }
 
   if (address) {
     return (

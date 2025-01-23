@@ -1,8 +1,6 @@
 {
   "scripts": {
-    "fl:dev": "pnpm --filter @ensofinance/feeling-lucky dev",
-    "sdk:dev": "pnpm --filter  @ensofinance/sdk dev",
-    "sdk:build": "pnpm --filter  @ensofinance/sdk build"
+    "fl:dev": "pnpm --filter @ensofinance/feeling-lucky dev"
   },
   "name": "ense-apps-monorepo",
   "version": "1.0.0",

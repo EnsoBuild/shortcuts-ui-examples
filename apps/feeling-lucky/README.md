@@ -1,6 +1,6 @@
 ## Feeling lucky
 
-#### One of comings mini-app serving as an example of Enso API essential use case - tokens swapping
+#### Cannot decide where to ape in? Feeling lucky is here to help you out.
 
 It allows users to ape into random meme for amount and token of their choice.
 Gets use of `@ensofinance/sdk` to access API. Showcases a way to easily implement a telegram mini-app utilizing `Privy` functionality
@@ -43,5 +43,4 @@ Gets use of `@ensofinance/sdk` to access API. Showcases a way to easily implemen
 - **NEXT_PUBLIC_ENSO_API_KEY**: API key for Enso Finance.
 - **NEXT_PUBLIC_COINGECKO_KEY**: API key for CoinGecko.
 - **NEXT_PUBLIC_PRIVY_KEY**: API key for Privy.
-- **NEXT_PUBLIC_EOA_DISABLED**: Flag to disable EOA in favor of embedded wallets
 - **NEXT_PUBLIC_ONE_INCH_API_KEY**: API key for 1inch.

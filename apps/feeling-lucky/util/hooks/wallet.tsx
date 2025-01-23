@@ -11,17 +11,13 @@ import {
   UseSendTransactionReturnType,
   UseWriteContractReturnType,
   useBlockNumber,
-  useDisconnect,
   useBalance,
 } from "wagmi";
 import { enqueueSnackbar } from "notistack";
-import { useWallets } from "@privy-io/react-auth";
-import { useSetActiveWallet } from "@privy-io/wagmi";
-import { BaseError } from "viem";
+import { Address, BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatNumber, normalizeValue } from "@ensofinance/shared/util";
 import { RouteParams } from "@ensofinance/sdk";
-import { Address } from "@ensofinance/shared/types";
 import { useTokenFromList } from "./common";
 import erc20Abi from "../../erc20Abi.json";
 import { useEnsoRouterData } from "./enso";
@@ -40,8 +36,9 @@ const toastState: Record<TxState, "success" | "error" | "info"> = {
 };
 
 export const useErc20Balance = (tokenAddress: `0x${string}`) => {
-  console.log(tokenAddress, "tokenAddress");
   const { address } = useAccount();
+  console.log(address, tokenAddress, "tokenAddress");
+
   return useReadContract({
     address: tokenAddress,
     abi: erc20Abi,
@@ -87,7 +84,7 @@ export const useApprove = (token: Address, target: Address, amount: string) => {
   const chainId = useChainId();
 
   return {
-    title: `Approve ${formatNumber(normalizeValue(+amount, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
+    title: `Approve ${formatNumber(normalizeValue(amount, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
     args: {
       chainId,
       address: token,
@@ -138,14 +135,7 @@ const useWatchTransactionHash = <
   description: string,
   usedWriteContract: T,
 ) => {
-  // const addRecentTransaction = useAddRecentTransaction();
-
   const hash = usedWriteContract.data;
-
-  // useEffect(() => {
-  //   if (hash) addRecentTransaction({ hash, description });
-  // }, [hash]);
-
   const waitForTransaction = useWaitForTransactionReceipt({
     hash,
   });
@@ -238,14 +228,6 @@ export const useApproveIfNecessary = (
   return +allowance < +amount ? writeApprove : undefined;
 };
 
-export const useNetworkId = () => {
-  const { wallets } = useWallets();
-  const { address } = useAccount();
-  const activeWallet = wallets?.find((wallet) => wallet.address === address);
-
-  return +activeWallet?.chainId.split(":")[1];
-};
-
 export const useSendEnsoTransaction = (
   amountIn: string,
   tokenOut: Address,
@@ -271,7 +253,7 @@ export const useSendEnsoTransaction = (
   const tokenFromData = useTokenFromList(tokenIn);
 
   const sendTransaction = useExtendedSendTransaction(
-    `Purchase ${formatNumber(normalizeValue(+amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
+    `Purchase ${formatNumber(normalizeValue(amountIn, tokenFromData?.decimals))} ${tokenFromData?.symbol} of ${tokenData?.symbol}`,
     ensoData?.tx,
   );
 

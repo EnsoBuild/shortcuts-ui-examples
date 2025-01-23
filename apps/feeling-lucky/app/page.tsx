@@ -13,13 +13,12 @@ import {
   RadioCard,
 } from "@chakra-ui/react";
 import { base } from "viem/chains";
-import { useCallback, useMemo, useState } from "react";
-import { useSwitchChain, useAccount } from "wagmi";
+import { useMemo, useState } from "react";
+import { useSwitchChain, useAccount, useChainId } from "wagmi";
 import { usePrivy } from "@privy-io/react-auth";
 import { Spoiler } from "spoiled";
 import {
   useApproveIfNecessary,
-  useNetworkId,
   useSendEnsoTransaction,
   useTokenBalance,
 } from "@/util/hooks/wallet";
@@ -29,7 +28,13 @@ import {
   formatNumber,
   normalizeValue,
 } from "@ensofinance/shared/util";
-import { DEFI_LIST, MEMES_LIST, USDC_ADDRESSES } from "@/util/constants";
+import {
+  DEFAI_LIST,
+  DEFAULT_SLIPPAGE,
+  DEFI_LIST,
+  MEMES_LIST,
+  USDC_ADDRESSES,
+} from "@/util/constants";
 import { useTokenFromList } from "@/util/hooks/common";
 import TokenSelector from "@/components/TokenSelector";
 import WalletButton from "@/components/WalletButton";
@@ -40,11 +45,17 @@ import { ColorModeButton } from "@/components/ui/color-mode";
 enum Category {
   defi,
   meme,
+  defai,
 }
-
-const CategoryList = {
+const CategoryTokens = {
   [Category.defi]: DEFI_LIST,
   [Category.meme]: MEMES_LIST,
+  [Category.defai]: DEFAI_LIST,
+};
+const CategoryNames = {
+  [Category.defi]: "DeFi",
+  [Category.meme]: "Meme",
+  [Category.defai]: "DeFAI",
 };
 
 const LuckyDeFi = () => {
@@ -54,7 +65,7 @@ const LuckyDeFi = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     Category.meme.toString(),
   );
-  const chainId = useNetworkId();
+  const chainId = useChainId();
   const tokenInInfo = useTokenFromList(tokenIn);
   const { switchChain } = useSwitchChain();
   const balance = useTokenBalance(tokenIn);
@@ -63,7 +74,10 @@ const LuckyDeFi = () => {
   const [swapValue, setSwapValue] = useState(10);
   const [revealed, setRevealed] = useState(false);
 
-  const swapAmount = denormalizeValue(swapValue, tokenInInfo?.decimals);
+  const swapAmount = denormalizeValue(
+    swapValue.toString(),
+    tokenInInfo?.decimals,
+  );
 
   const approveData = useEnsoApprove(tokenIn, swapAmount);
   const approve = useApproveIfNecessary(
@@ -72,8 +86,8 @@ const LuckyDeFi = () => {
     swapAmount,
   );
 
-  const randomMeme = useMemo(() => {
-    const selectedList = CategoryList[selectedCategory];
+  const randomToken = useMemo(() => {
+    const selectedList = CategoryTokens[selectedCategory];
     const index = Math.floor(Math.random() * selectedList.length);
 
     return selectedList[index] as Address;
@@ -81,50 +95,32 @@ const LuckyDeFi = () => {
 
   const { sendTransaction: sendData } = useSendEnsoTransaction(
     swapAmount,
-    randomMeme,
+    randomToken,
     tokenIn,
-    3000,
+    DEFAULT_SLIPPAGE,
   );
-  const tokenOutInfo = useTokenFromList(randomMeme as Address);
+  const tokenOutInfo = useTokenFromList(randomToken as Address);
 
   const wrongChain = chainId !== base.id;
   const notEnoughBalance = tokenIn && +balance < +swapAmount;
   const needLogin = ready && !address;
   const approveNeeded = !!approve && +swapAmount > 0 && !!tokenIn;
 
-  const SpoilerComponent = useCallback(
-    ({ children }) => (
-      <Spoiler
-        density={0.5}
-        hidden={!revealed}
-        onClick={() => setRevealed((val) => !val)}
-      >
-        {children}
-      </Spoiler>
-    ),
-    [revealed],
-  );
-
   const { data: quoteData } = useEnsoQuote({
     chainId: base.id,
     fromAddress: address,
     amountIn: swapAmount,
     tokenIn: tokenIn,
-    tokenOut: randomMeme,
+    tokenOut: randomToken,
     routingStrategy: "router",
   });
-  const valueOut = normalizeValue(
-    +quoteData?.amountOut,
-    tokenOutInfo?.decimals,
-  );
+  const valueOut = normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
   const exchangeRate = +valueOut / +swapValue;
 
   return (
     <Container py={8} h={"full"} w={"full"}>
       <Flex justify="space-around" w={"full"}>
-        {/*<EoaModeSelector />*/}
         <ColorModeButton />
-
         <WalletButton />
       </Flex>
 
@@ -146,7 +142,7 @@ const LuckyDeFi = () => {
               value={selectedCategory}
             >
               <HStack align="stretch" w={150}>
-                {Object.keys(CategoryList).map((key) => (
+                {Object.keys(CategoryTokens).map((key) => (
                   <RadioCard.Item
                     display={"flex"}
                     w={"full"}
@@ -157,10 +153,12 @@ const LuckyDeFi = () => {
                     alignItems={"center"}
                   >
                     <RadioCard.ItemHiddenInput />
-                    <RadioCard.ItemControl minW={"80px"} justifyContent={"center"}>
+                    <RadioCard.ItemControl
+                      minW={"80px"}
+                      justifyContent={"center"}
+                    >
                       <RadioCard.ItemText>
-                        {Category[key][0].toUpperCase() +
-                          Category[key].slice(1)}
+                        {CategoryNames[+key as Category]}
                       </RadioCard.ItemText>
                     </RadioCard.ItemControl>
                   </RadioCard.Item>
@@ -188,11 +186,18 @@ const LuckyDeFi = () => {
                       fontSize="sm"
                       mb={1}
                       whiteSpace={"nowrap"}
+                      cursor={"pointer"}
                       visibility={address ? "visible" : "hidden"}
+                      _hover={{ color: "gray.600" }}
+                      onClick={() =>
+                        setSwapValue(
+                          +normalizeValue(balance, tokenInInfo?.decimals),
+                        )
+                      }
                     >
                       Available:{" "}
                       {formatNumber(
-                        normalizeValue(+balance, tokenInInfo?.decimals),
+                        normalizeValue(balance, tokenInInfo?.decimals),
                       )}{" "}
                       {tokenInInfo?.symbol}
                     </Text>
@@ -218,38 +223,52 @@ const LuckyDeFi = () => {
               </Flex>
 
               <VStack align="stretch" gap={3}>
-                <Center>
+                <Center
+                  onClick={() => setRevealed((val) => !val)}
+                  cursor={"pointer"}
+                >
                   <Heading as={"h6"} size={"md"} color="gray.500">
                     You will receive:{" "}
-                    <SpoilerComponent>
-                      {formatNumber(valueOut)} {tokenOutInfo?.symbol}
-                    </SpoilerComponent>
+                    <Box>
+                      <Spoiler density={0.5} hidden={!revealed}>
+                        {formatNumber(valueOut)} {tokenOutInfo?.symbol}
+                      </Spoiler>
+                    </Box>
                   </Heading>
                 </Center>
 
-                <Flex justify="space-between">
+                <Flex
+                  justify="space-between"
+                  onClick={() => setRevealed((val) => !val)}
+                  cursor={"pointer"}
+                >
                   <Text color="gray.600">Exchange Rate:</Text>
-                  <SpoilerComponent>
+                  <Spoiler density={0.5} hidden={!revealed}>
+                    {" "}
                     <Text>
                       1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate)}{" "}
                       {tokenOutInfo?.symbol}
                     </Text>
-                  </SpoilerComponent>
+                  </Spoiler>
                 </Flex>
 
                 <Flex justify="space-between">
                   <Text color="gray.600">Price impact:</Text>
                   <Text>
-                    {normalizeValue(quoteData?.priceImpact ?? 0, 4).toFixed(2)}%
+                    {((quoteData?.priceImpact ?? 0) / 100).toFixed(2)}%
                   </Text>
                 </Flex>
 
-                <Flex justify="space-between">
-                  <Text color="gray.600">Gas:</Text>
-                  <Text>
-                    {normalizeValue(+(quoteData?.gas ?? 0), 18).toFixed(2)} ETH
-                  </Text>
-                </Flex>
+                {/*<Flex justify="space-between">*/}
+                {/*  <Text color="gray.600">Gas:</Text>*/}
+                {/*  <Text>*/}
+                {/*    {formatNumber(*/}
+                {/*      normalizeValue(quoteData?.gas ?? "0", 18),*/}
+                {/*      true,*/}
+                {/*    )}{" "}*/}
+                {/*    ETH*/}
+                {/*  </Text>*/}
+                {/*</Flex>*/}
               </VStack>
 
               <Flex mt={4} w={"full"} justifyContent={"center"}>

@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { createListCollection, Flex, Text } from "@chakra-ui/react";
 import { useMemo } from "react";
+import { Address } from "viem";
 import { Token, useOneInchTokenList } from "@/util/hooks/common";
-import { Address } from "@ensofinance/shared/types";
 import {
   SelectContent,
   SelectItem,

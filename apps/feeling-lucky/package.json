@@ -1,5 +1,5 @@
 {
-  "name": "@ensofinance/feeling-lucky",
+  "name": "feeling-lucky",
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev -p 4000",
@@ -11,12 +11,13 @@
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^3.2.3",
     "@emotion/react": "^11.13.5",
-    "@ensofinance/sdk": "workspace:*",
+    "@ensofinance/sdk": "1.0.10",
     "@ensofinance/shared": "workspace:*",
     "@privy-io/react-auth": "^1.95.0",
     "@privy-io/wagmi": "^0.2.12",
     "@solana/web3.js": "^1.95.5",
     "@tanstack/react-query": "^5.61.3",
+    "@uidotdev/usehooks": "^2.4.1",
     "next": "^15.0.3",
     "next-themes": "^0.4.4",
     "notistack": "^3.0.1",

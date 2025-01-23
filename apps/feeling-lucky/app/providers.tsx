@@ -8,7 +8,6 @@ import { WagmiProvider } from "@privy-io/wagmi";
 import { SnackbarProvider } from "notistack";
 import { ColorModeProvider } from "@/components/ui/color-mode";
 import { wagmiConfig } from "@/util/config";
-import { isEoaMode } from "@/util/util";
 
 const queryClient = new QueryClient();
 const PRIVY_KEY = process.env.NEXT_PUBLIC_PRIVY_KEY;
@@ -23,7 +22,6 @@ export function Providers({ children }) {
       walletChainType: "ethereum-only",
     },
     loginMethods: ["wallet", "telegram"],
-    embeddedWallets: isEoaMode ? undefined : { createOnLogin: "all-users" },
   });
 
   return (
