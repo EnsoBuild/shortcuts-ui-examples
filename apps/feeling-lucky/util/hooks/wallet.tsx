@@ -248,7 +248,7 @@ export const useSendEnsoTransaction = (
     routingStrategy: "router",
   };
 
-  const { data: ensoData } = useEnsoRouterData(preparedData);
+  const { data: ensoData, isFetching } = useEnsoRouterData(preparedData);
   const tokenData = useTokenFromList(tokenOut);
   const tokenFromData = useTokenFromList(tokenIn);
 
@@ -260,5 +260,6 @@ export const useSendEnsoTransaction = (
   return {
     sendTransaction,
     ensoData,
+    isFetchingEnsoData: isFetching,
   };
 };

@@ -11,9 +11,10 @@ import {
   Input,
   HStack,
   RadioCard,
+  Skeleton,
 } from "@chakra-ui/react";
 import { base } from "viem/chains";
-import { useMemo, useState } from "react";
+import { useMemo, useState, ReactNode } from "react";
 import { useSwitchChain, useAccount, useChainId } from "wagmi";
 import { usePrivy } from "@privy-io/react-auth";
 import { Spoiler } from "spoiled";
@@ -93,12 +94,8 @@ const LuckyDeFi = () => {
     return selectedList[index] as Address;
   }, [selectedCategory]);
 
-  const { sendTransaction: sendData } = useSendEnsoTransaction(
-    swapAmount,
-    randomToken,
-    tokenIn,
-    DEFAULT_SLIPPAGE,
-  );
+  const { sendTransaction: sendData, isFetchingEnsoData } =
+    useSendEnsoTransaction(swapAmount, randomToken, tokenIn, DEFAULT_SLIPPAGE);
   const tokenOutInfo = useTokenFromList(randomToken as Address);
 
   const wrongChain = chainId !== base.id;
@@ -116,6 +113,14 @@ const LuckyDeFi = () => {
   });
   const valueOut = normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
   const exchangeRate = +valueOut / +swapValue;
+
+  const SkeletonLoader = ({
+    children,
+    isLoading,
+  }: {
+    children: ReactNode;
+    isLoading: boolean;
+  }) => (isLoading ? <Skeleton w={"120px"} h={"24px"} /> : <>{children}</>);
 
   return (
     <Container py={8} h={"full"} w={"full"}>
@@ -229,11 +234,13 @@ const LuckyDeFi = () => {
                 >
                   <Heading as={"h6"} size={"md"} color="gray.500">
                     You will receive:{" "}
-                    <Box>
-                      <Spoiler density={0.5} hidden={!revealed}>
-                        {formatNumber(valueOut)} {tokenOutInfo?.symbol}
-                      </Spoiler>
-                    </Box>
+                    <SkeletonLoader isLoading={isFetchingEnsoData}>
+                      <Box>
+                        <Spoiler density={0.5} hidden={!revealed}>
+                          {formatNumber(valueOut)} {tokenOutInfo?.symbol}
+                        </Spoiler>
+                      </Box>
+                    </SkeletonLoader>
                   </Heading>
                 </Center>
 
@@ -243,19 +250,21 @@ const LuckyDeFi = () => {
                   cursor={"pointer"}
                 >
                   <Text color="gray.600">Exchange Rate:</Text>
-                  <Spoiler density={0.5} hidden={!revealed}>
-                    {" "}
-                    <Text>
-                      1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate)}{" "}
-                      {tokenOutInfo?.symbol}
-                    </Text>
-                  </Spoiler>
+                  <SkeletonLoader isLoading={isFetchingEnsoData}>
+                    <Spoiler density={0.5} hidden={!revealed}>
+                      {" "}
+                      <Text>
+                        1 {tokenInInfo?.symbol} = {formatNumber(exchangeRate)}{" "}
+                        {tokenOutInfo?.symbol}
+                      </Text>
+                    </Spoiler>
+                  </SkeletonLoader>
                 </Flex>
 
                 <Flex justify="space-between">
                   <Text color="gray.600">Price impact:</Text>
                   <Text>
-                    {((quoteData?.priceImpact ?? 0) / 100).toFixed(2)}%
+                    -{((quoteData?.priceImpact ?? 0) / 100).toFixed(2)}%
                   </Text>
                 </Flex>
 
