@@ -37,7 +37,6 @@ const toastState: Record<TxState, "success" | "error" | "info"> = {
 
 export const useErc20Balance = (tokenAddress: `0x${string}`) => {
   const { address } = useAccount();
-  console.log(address, tokenAddress, "tokenAddress");
 
   return useReadContract({
     address: tokenAddress,
@@ -108,7 +107,6 @@ export const useExtendedContractWrite = (
       writeContractVariables.abi &&
       writeContractVariables.functionName
     ) {
-      console.log("writeContractVariables", writeContractVariables);
       // @ts-ignore
       contractWrite.writeContract(writeContractVariables, {
         onError: (error: BaseError) => {
