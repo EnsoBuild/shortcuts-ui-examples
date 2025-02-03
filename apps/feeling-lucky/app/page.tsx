@@ -17,6 +17,7 @@ import { base } from "viem/chains";
 import { useMemo, useState, ReactNode } from "react";
 import { useSwitchChain, useAccount, useChainId } from "wagmi";
 import { usePrivy } from "@privy-io/react-auth";
+import Image from "next/image";
 import { Spoiler } from "spoiled";
 import {
   useApproveIfNecessary,
@@ -125,12 +126,27 @@ const LuckyDeFi = () => {
   return (
     <Container py={8} h={"full"} w={"full"}>
       <Flex justify="space-around" w={"full"}>
+        <Image
+          src={"/logo_black_white.png"}
+          alt={"Enso"}
+          width={40}
+          height={40}
+        />
         <ColorModeButton />
         <WalletButton />
       </Flex>
 
       <Center h={"full"}>
         <VStack gap={4} align="flex-start" mt={-100}>
+          <Box opacity={0.7} mt={5}>
+            <Image
+              src={"/wordmark_gradient.png"}
+              alt="Enso"
+              width={450}
+              height={500}
+            />
+          </Box>
+
           <Heading size="lg" textAlign="center">
             I'm feeling lucky
           </Heading>
