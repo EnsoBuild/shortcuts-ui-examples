@@ -18,7 +18,7 @@ export function Providers({ children }) {
     appearance: {
       theme: "light",
       accentColor: "#EDF2F7",
-      logo: "/big-logo.svg",
+      logo: `${process.env.NEXT_PUBLIC_BASE_PATH}/big-logo.svg`,
       walletChainType: "ethereum-only",
     },
     loginMethods: ["wallet", "telegram"],

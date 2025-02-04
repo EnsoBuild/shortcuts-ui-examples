@@ -127,7 +127,7 @@ const LuckyDeFi = () => {
     <Container py={8} h={"full"} w={"full"}>
       <Flex justify="space-around" w={"full"}>
         <Image
-          src={"/logo_black_white.png"}
+          src={`${process.env.NEXT_PUBLIC_BASE_PATH}/logo_black_white.png`}
           alt={"Enso"}
           width={40}
           height={40}
@@ -140,7 +140,7 @@ const LuckyDeFi = () => {
         <VStack gap={4} align="flex-start" mt={-100}>
           <Box opacity={0.7} mt={5}>
             <Image
-              src={"/wordmark_gradient.png"}
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH}/wordmark_gradient.png`}
               alt="Enso"
               width={450}
               height={500}

@@ -1,10 +1,9 @@
-const env = process.env.NODE_ENV;
-const isProd = env === "production";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 module.exports = {
   // required to have several apps on single route
-  basePath: isProd ? "/feeling-lucky" : "",
-  assetPrefix: isProd ? "/feeling-lucky" : "",
+  publicRuntimeConfig: basePath,
+  basePath,
   trailingSlash: false,
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
