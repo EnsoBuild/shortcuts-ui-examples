@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "fl:dev": "pnpm --filter @ensofinance/feeling-lucky dev"
+    "fl:dev": "pnpm --filter feeling-lucky dev"
   },
-  "name": "ense-apps-monorepo",
+  "name": "enso-apps-monorepo",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "git@github.com:EnsoFinance/shortcuts-ui-examples.git",

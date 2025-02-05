@@ -42,4 +42,3 @@ export const formatNumber = (value: number | string, precise?: boolean) => {
 export const formatUSD = (value: number | string) => {
   return usdFormatter.format(+value);
 };
-
