@@ -16,6 +16,7 @@ import {
 import { enqueueSnackbar } from "notistack";
 import { Address, BaseError } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
+import { useWallets } from "@privy-io/react-auth";
 import { formatNumber, normalizeValue } from "@ensofinance/shared/util";
 import { RouteParams } from "@ensofinance/sdk";
 import { useTokenFromList } from "./common";
@@ -260,4 +261,13 @@ export const useSendEnsoTransaction = (
     ensoData,
     isFetchingEnsoData: isFetching,
   };
+};
+
+// hack to fix wrong chain detection caused by privy
+export const useNetworkId = () => {
+  const { wallets } = useWallets();
+  const { address } = useAccount();
+  const activeWallet = wallets?.find((wallet) => wallet.address === address);
+
+  return +activeWallet?.chainId.split(":")[1];
 };

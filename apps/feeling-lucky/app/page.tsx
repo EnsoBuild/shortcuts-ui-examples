@@ -21,6 +21,7 @@ import Image from "next/image";
 import { Spoiler } from "spoiled";
 import {
   useApproveIfNecessary,
+  useNetworkId,
   useSendEnsoTransaction,
   useTokenBalance,
 } from "@/util/hooks/wallet";
@@ -67,7 +68,7 @@ const LuckyDeFi = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     Category.meme.toString(),
   );
-  const chainId = useChainId();
+  const chainId = useNetworkId();
   const tokenInInfo = useTokenFromList(tokenIn);
   const { switchChain } = useSwitchChain();
   const balance = useTokenBalance(tokenIn);
@@ -132,8 +133,10 @@ const LuckyDeFi = () => {
           width={40}
           height={40}
         />
-        <ColorModeButton />
-        <WalletButton />
+        <Flex gap={5} align="center">
+          <ColorModeButton />
+          <WalletButton />
+        </Flex>
       </Flex>
 
       <Center h={"full"}>
@@ -224,8 +227,14 @@ const LuckyDeFi = () => {
                     </Text>
                   </Flex>
                   <Input
+                    css={{
+                      "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button":
+                        {
+                          WebkitAppearance: "none",
+                        },
+                    }}
+                    type={"number"}
                     fontSize="xl"
-                    // variant="subtle"
                     border={"none"}
                     outline={"none"}
                     placeholder="0.0"
