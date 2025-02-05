@@ -5,6 +5,19 @@
 The app allows users to ape into random token from selected sector for amount and token of their choice.
 it uses React, Next.js, Wagmi, Privy, Chakra-UI, and `@ensofinance/sdk-ts` to access Enso API.
 
+### Running the app
+
+##### Environment Variables
+
+- **NEXT_PUBLIC_ENSO_API_KEY**: API key for Enso Finance.
+- **NEXT_PUBLIC_PRIVY_KEY**: API key for Privy.
+
+#### Inside console
+
+```sh
+    pnpm dev
+```
+
 ### Main file page.tsx
 
 - **State Management**: Manages the state for `swapValue`, `tokenIn` and `randomMeme`
@@ -37,8 +50,3 @@ it uses React, Next.js, Wagmi, Privy, Chakra-UI, and `@ensofinance/sdk-ts` to ac
 - **useAllowance**: Used to get the allowance of an ERC20 token.
 - **useApprove**: Used to approve an ERC20 token.
 - other app specific functions to handle txs progress tracking
-
-### Environment Variables
-
-- **NEXT_PUBLIC_ENSO_API_KEY**: API key for Enso Finance.
-- **NEXT_PUBLIC_PRIVY_KEY**: API key for Privy.
