@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ArrowRight,
   ArrowRightLeft,
@@ -7,22 +7,14 @@ import {
 } from "lucide-react";
 import {
   Box,
-  Button,
   Heading,
   Text,
-  VStack,
   HStack,
   useDisclosure,
   Card,
+  Center,
 } from "@chakra-ui/react";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import ConfirmDialog from "@/components/ConfirmDialog.tsx";
 
 // Mock data for available source pools
 const sourcePools = [
@@ -74,13 +66,12 @@ const SourcePoolItem = ({ pool, isSelected, onClick }) => (
   <Box
     mb={4}
     p={4}
-    bg="white"
     shadow="sm"
     rounded="xl"
     cursor="pointer"
     transition="all"
     _hover={{ shadow: "md" }}
-    border={isSelected ? "2px solid" : "none"}
+    border={"2px solid"}
     borderColor={isSelected ? "blue.500" : "transparent"}
     onClick={onClick}
   >
@@ -112,7 +103,6 @@ const TargetPoolItem = ({ pool, sourceApy, onSelect }) => {
     <Box
       mb={4}
       p={4}
-      bg="white"
       shadow="sm"
       rounded="xl"
       cursor="pointer"
@@ -147,77 +137,6 @@ const TargetPoolItem = ({ pool, sourceApy, onSelect }) => {
   );
 };
 
-const PreviewDialog = ({ open, onOpenChange, sourcePool, targetPool }) => {
-  const apy = {
-    difference: (targetPool?.apy - sourcePool?.apy).toFixed(1),
-    percentageGain: (
-      ((targetPool?.apy - sourcePool?.apy) / sourcePool?.apy) *
-      100
-    ).toFixed(1),
-  };
-
-  return (
-    <DialogRoot open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Preview Migration</DialogTitle>
-          <DialogDescription>
-            Review your position migration details
-          </DialogDescription>
-        </DialogHeader>
-
-        <VStack gap={4}>
-          <Box>
-            <Heading size="sm">Source Position</Heading>
-            <HStack justify="space-between" mt={1}>
-              <Text>{sourcePool?.protocol}</Text>
-              <Text>{sourcePool?.apy}% APY</Text>
-            </HStack>
-          </Box>
-
-          <Box>
-            <Heading size="sm">Target Position</Heading>
-            <HStack justify="space-between" mt={1}>
-              <Text>{targetPool?.protocol}</Text>
-              <Text>{targetPool?.apy}% APY</Text>
-            </HStack>
-          </Box>
-
-          <Box>
-            <Heading size="sm">Expected Improvement</Heading>
-            <HStack mt={2} align="center" gap={2}>
-              <Text fontSize="2xl" fontWeight="semibold">
-                {apy.difference}%
-              </Text>
-              <Text color={+apy.difference > 0 ? "green.600" : "red.600"}>
-                {+apy.difference > 0 ? (
-                  <TrendingUp className="h-5 w-5" />
-                ) : (
-                  <TrendingDown className="h-5 w-5" />
-                )}
-              </Text>
-            </HStack>
-            <Text fontSize="sm" color="gray.600">
-              {apy.percentageGain}% improvement in APY
-            </Text>
-          </Box>
-
-          <Text fontSize="sm" color="gray.600">
-            Estimated gas cost: ~$20-30
-          </Text>
-        </VStack>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button>Confirm Migration</Button>
-        </DialogFooter>
-      </DialogContent>
-    </DialogRoot>
-  );
-};
-
 const Home = () => {
   const [selectedSource, setSelectedSource] = useState(null);
   const [selectedTarget, setSelectedTarget] = useState(null);
@@ -229,86 +148,87 @@ const Home = () => {
   };
 
   return (
-    <Box minH="100vh" bg="gray.50">
-      <Box mx="auto" maxW="7xl" px={4} py={8}>
-        <Heading
-          mb={8}
-          display="flex"
-          alignItems="center"
-          gap={2}
-          fontSize="2xl"
-          fontWeight="bold"
-        >
-          <ArrowRightLeft className="h-6 w-6" />
-          Yield Migrator
-        </Heading>
+    <Box minH="100vh">
+      <Center>
+        <Box mx="auto" maxW="7xl" px={4} py={8}>
+          <Heading
+            mb={8}
+            display="flex"
+            alignItems="center"
+            gap={2}
+            fontSize="2xl"
+            fontWeight="bold"
+          >
+            <ArrowRightLeft className="h-6 w-6" />
+            Yield Migrator
+          </Heading>
 
-        <HStack gap={6}>
-          {/* Source Pool Column */}
-          <Box w="50%">
-            <Card.Root>
-              <Card.Header>
-                <Heading size="md">Source Pool</Heading>
-              </Card.Header>
-              <Card.Body>
-                {sourcePools.map((pool) => (
-                  <SourcePoolItem
-                    key={pool.id}
-                    pool={pool}
-                    isSelected={selectedSource?.id === pool.id}
-                    onClick={() => setSelectedSource(pool)}
-                  />
-                ))}
-              </Card.Body>
-            </Card.Root>
-          </Box>
+          <HStack gap={6} w={"full"} align="start">
+            {/* Source Pool Column */}
+            <Box>
+              <Card.Root>
+                <Card.Header>
+                  <Heading size="md">Your positions</Heading>
+                </Card.Header>
+                <Card.Body>
+                  {sourcePools.map((pool) => (
+                    <SourcePoolItem
+                      key={pool.id}
+                      pool={pool}
+                      isSelected={selectedSource?.id === pool.id}
+                      onClick={() => setSelectedSource(pool)}
+                    />
+                  ))}
+                </Card.Body>
+              </Card.Root>
+            </Box>
 
-          {/* Target Pool Column */}
-          <Box w="50%">
-            <Card.Root>
-              <Card.Header>
-                <Heading size="md">Target Pool</Heading>
-              </Card.Header>
-              <Card.Body>
-                {selectedSource ? (
-                  targetPools[selectedSource.asset]
-                    .filter(
-                      (target) => target.protocol !== selectedSource.protocol,
-                    )
-                    .map((target, index) => (
-                      <TargetPoolItem
-                        key={index}
-                        pool={target}
-                        sourceApy={selectedSource.apy}
-                        onSelect={() => handleTargetSelect(target)}
-                      />
-                    ))
-                ) : (
-                  <Box
-                    display="flex"
-                    h="40"
-                    alignItems="center"
-                    justifyContent="center"
-                    color="gray.500"
-                  >
-                    <HStack alignItems="center" gap={2}>
-                      <Text>Select a source pool</Text>
-                      <ArrowRight className="h-4 w-4" />
-                    </HStack>
-                  </Box>
-                )}
-              </Card.Body>
-            </Card.Root>
-          </Box>
-        </HStack>
-
-        <PreviewDialog
-          open={open}
-          onOpenChange={onClose}
-          sourcePool={selectedSource}
-          targetPool={selectedTarget}
-        />
-      </Box>
+            {/* Target Pool Column */}
+            <Box w={300}>
+              <Card.Root>
+                <Card.Header>
+                  <Heading size="md">Target Pool</Heading>
+                </Card.Header>
+                <Card.Body>
+                  {selectedSource ? (
+                    targetPools[selectedSource.asset]
+                      .filter(
+                        (target) => target.protocol !== selectedSource.protocol,
+                      )
+                      .map((target, index) => (
+                        <TargetPoolItem
+                          key={index}
+                          pool={target}
+                          sourceApy={selectedSource.apy}
+                          onSelect={() => handleTargetSelect(target)}
+                        />
+                      ))
+                  ) : (
+                    <Box
+                      display="flex"
+                      h="40"
+                      alignItems="center"
+                      justifyContent="center"
+                      color="gray.500"
+                    >
+                      <HStack alignItems="center" gap={2}>
+                        <Text>Select a source pool</Text>
+                        <ArrowRight className="h-4 w-4" />
+                      </HStack>
+                    </Box>
+                  )}
+                </Card.Body>
+              </Card.Root>
+            </Box>
+          </HStack>
+        </Box>
+      </Center>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={onClose}
+        sourcePool={selectedSource}
+        targetPool={selectedTarget}
+      />
     </Box>
   );
 };
