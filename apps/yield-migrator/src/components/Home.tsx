@@ -15,6 +15,12 @@ import {
   Center,
 } from "@chakra-ui/react";
 import ConfirmDialog from "@/components/ConfirmDialog.tsx";
+import {
+  useEnsoBalances,
+  useEnsoToken,
+  useEnsoTokenDetails,
+} from "@/service/enso.tsx";
+import { isAddress } from "viem";
 
 // Mock data for available source pools
 const sourcePools = [
@@ -137,10 +143,42 @@ const TargetPoolItem = ({ pool, sourceApy, onSelect }) => {
   );
 };
 
+const usePositions = () => {
+  const { data: balances } = useEnsoBalances();
+  const positionsTokens = useEnsoTokenDetails(
+    balances
+      ?.filter(({ price, token }) => +price > 0 && isAddress(token))
+      .map((position) => position.token),
+  );
+  console.log(positionsTokens);
+  return balances
+    ?.map((position) => {
+      const token = positionsTokens?.find(
+        (token) => token.address === position.token,
+      );
+
+      return { position, token };
+    })
+    .filter(({ token, position }) => token?.type === "defi");
+};
+
 const Home = () => {
   const [selectedSource, setSelectedSource] = useState(null);
   const [selectedTarget, setSelectedTarget] = useState(null);
   const { open, onOpen, onClose } = useDisclosure();
+
+  const positions = usePositions();
+
+  const sourcePools = positions?.map(({ position, token }) => ({
+    id: position.token,
+    protocol: token.protocolSlug,
+    asset: token.symbol,
+    amount: position.amount,
+    apy: token.apy,
+    tvl: "100000"
+  }));
+
+  console.log(positions);
 
   const handleTargetSelect = (target) => {
     setSelectedTarget(target);
@@ -165,13 +203,13 @@ const Home = () => {
 
           <HStack gap={6} w={"full"} align="start">
             {/* Source Pool Column */}
-            <Box>
+            <Box w={300}>
               <Card.Root>
                 <Card.Header>
                   <Heading size="md">Your positions</Heading>
                 </Card.Header>
                 <Card.Body>
-                  {sourcePools.map((pool) => (
+                  {sourcePools?.map((pool) => (
                     <SourcePoolItem
                       key={pool.id}
                       pool={pool}
