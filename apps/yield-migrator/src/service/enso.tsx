@@ -1,8 +1,8 @@
 import { useAccount, useChainId } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { isAddress, Address } from "viem";
+import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { Token } from "./common";
 import { useSendEnsoTransaction } from "./wallet";
 import { ONEINCH_ONLY_TOKENS } from "./constants";
@@ -122,23 +122,39 @@ export const useEnsoBalances = () => {
   });
 };
 
-export const useEnsoTokenDetails = (address: Address | Address[]) => {
+export const useEnsoTokenDetails = ({
+  address,
+  underlyingTokens,
+}: {
+  address?: Address | Address[];
+  underlyingTokens?: Address | Address[];
+}) => {
   const chainId = useChainId();
+  const enabled =
+    areAddressesValid(address) || areAddressesValid(underlyingTokens);
 
-  const { data } = useQuery({
-    queryKey: ["enso-token-details", address, chainId],
+  return useQuery({
+    queryKey: ["enso-token-details", address, underlyingTokens, chainId],
     queryFn: () =>
-      ensoClient.getTokenData({ address, chainId, includeMetadata: true }),
-    enabled: areAddressesValid(address),
+      ensoClient
+        .getTokenData({
+          underlyingTokens,
+          address,
+          chainId,
+          includeMetadata: true,
+        })
+        .then((data) =>
+          data.data.map((token) => ({
+            ...token,
+            address: token.address.toLowerCase() as Address,
+          })),
+        ),
+    enabled,
   });
-  return data?.data.map((token) => ({
-    ...token,
-    address: token.address.toLowerCase() as Address,
-  }));
 };
 
 export const useEnsoToken = (address?: Address | Address[]) => {
-  const tokens = useEnsoTokenDetails(address);
+  const { data: tokens } = useEnsoTokenDetails({ address });
 
   const token: Token | null = useMemo(() => {
     if (!tokens?.length) return null;

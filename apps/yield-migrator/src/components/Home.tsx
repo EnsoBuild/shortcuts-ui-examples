@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowRightLeft,
@@ -13,101 +13,92 @@ import {
   useDisclosure,
   Card,
   Center,
+  Skeleton,
 } from "@chakra-ui/react";
-import ConfirmDialog from "@/components/ConfirmDialog.tsx";
-import {
-  useEnsoBalances,
-  useEnsoToken,
-  useEnsoTokenDetails,
-} from "@/service/enso.tsx";
 import { isAddress } from "viem";
+import { useAccount, useChainId } from "wagmi";
+import { TokenData } from "@ensofinance/sdk";
+import { useEnsoBalances, useEnsoTokenDetails } from "@/service/enso.tsx";
+import { formatNumber, formatUSD, normalizeValue } from "@/service";
+import ConfirmDialog from "@/components/ConfirmDialog.tsx";
+import { Position } from "@/types.ts";
 
-// Mock data for available source pools
-const sourcePools = [
-  {
-    id: 1,
-    protocol: "Aave",
-    asset: "USDC",
-    amount: "10000",
-    apy: 4.2,
-    tvl: 1200000000,
-  },
-  {
-    id: 2,
-    protocol: "Compound",
-    asset: "ETH",
-    amount: "5",
-    apy: 3.8,
-    tvl: 800000000,
-  },
-  {
-    id: 3,
-    protocol: "Maker",
-    asset: "DAI",
-    amount: "15000",
-    apy: 3.5,
-    tvl: 1500000000,
-  },
-];
+const SourcePoolItem = ({
+  position,
+  isSelected,
+  onClick,
+}: {
+  position: Position;
+  isSelected: boolean;
+  onClick: () => void;
+}) => {
+  const normalizedBalance = normalizeValue(
+    position.balance.amount,
+    position.token.decimals,
+  );
 
-const targetPools = {
-  USDC: [
-    { protocol: "Compound", apy: 4.5, tvl: 900000000 },
-    { protocol: "Curve", apy: 4.8, tvl: 600000000 },
-    { protocol: "Yearn", apy: 5.1, tvl: 400000000 },
-  ],
-  ETH: [
-    { protocol: "Aave", apy: 4.0, tvl: 1100000000 },
-    { protocol: "Lido", apy: 4.2, tvl: 2000000000 },
-    { protocol: "Rocket Pool", apy: 4.1, tvl: 500000000 },
-  ],
-  DAI: [
-    { protocol: "Aave", apy: 3.8, tvl: 800000000 },
-    { protocol: "Compound", apy: 3.9, tvl: 700000000 },
-    { protocol: "Curve", apy: 4.0, tvl: 900000000 },
-  ],
+  return (
+    <Box
+      p={4}
+      shadow="sm"
+      rounded="xl"
+      cursor="pointer"
+      transition="all"
+      _hover={{ shadow: "md" }}
+      border={"2px solid"}
+      borderColor={isSelected ? "blue.500" : "transparent"}
+      onClick={onClick}
+    >
+      <HStack justify="space-between" align="start">
+        <Box>
+          <Text fontSize="md">{position.token.name}</Text>
+          <Text fontSize="xs" color={"gray.600"}>
+            {position.token.protocolSlug}
+          </Text>
+
+          <Text color="gray.600">
+            {position.token.underlyingTokens
+              .map(({ symbol }) => symbol)
+              .join("/")}
+          </Text>
+
+          {/*<Text mt={1} fontSize="sm" color="gray.600">*/}
+          {/*  TVL: ${(1.1).toFixed(1)}M*/}
+          {/*</Text>*/}
+        </Box>
+        <Box textAlign="right">
+          <Text fontWeight="medium">
+            {formatUSD(+normalizedBalance * +position.balance.price)}
+          </Text>
+          <Text>
+            {formatNumber(normalizedBalance)} {position.token.symbol}
+          </Text>
+
+          {position.token.apy > 0 && (
+            <Text fontSize="sm" color="gray.600">
+              {position.token.apy.toFixed(2)}% APY
+            </Text>
+          )}
+        </Box>
+      </HStack>
+    </Box>
+  );
 };
 
-const SourcePoolItem = ({ pool, isSelected, onClick }) => (
-  <Box
-    mb={4}
-    p={4}
-    shadow="sm"
-    rounded="xl"
-    cursor="pointer"
-    transition="all"
-    _hover={{ shadow: "md" }}
-    border={"2px solid"}
-    borderColor={isSelected ? "blue.500" : "transparent"}
-    onClick={onClick}
-  >
-    <HStack justify="space-between" align="start">
-      <Box>
-        <Heading size="md">{pool.protocol}</Heading>
-        <Text color="gray.600">{pool.asset}</Text>
-        <Text mt={1} fontSize="sm" color="gray.600">
-          TVL: ${(pool.tvl / 1000000).toFixed(1)}M
-        </Text>
-      </Box>
-      <Box textAlign="right">
-        <Text fontSize="lg" fontWeight="medium">
-          {pool.amount} {pool.asset}
-        </Text>
-        <Text fontSize="sm" color="gray.600">
-          {pool.apy}% APY
-        </Text>
-      </Box>
-    </HStack>
-  </Box>
-);
-
-const TargetPoolItem = ({ pool, sourceApy, onSelect }) => {
-  const apyDiff = pool.apy - sourceApy;
+const TargetPoolItem = ({
+  token,
+  sourceApy,
+  onSelect,
+}: {
+  token: TokenData;
+  sourceApy: number;
+  onSelect: () => void;
+}) => {
+  const apyDiff = token.apy - sourceApy;
   const isPositive = apyDiff > 0;
 
   return (
     <Box
-      mb={4}
       p={4}
       shadow="sm"
       rounded="xl"
@@ -117,68 +108,104 @@ const TargetPoolItem = ({ pool, sourceApy, onSelect }) => {
     >
       <HStack justify="space-between" align="start">
         <Box>
-          <Heading size="md">{pool.protocol}</Heading>
-          <Text mt={1} fontSize="sm" color="gray.600">
-            TVL: ${(pool.tvl / 1000000).toFixed(1)}M
-          </Text>
+          <Text fontSize="md">{token.name}</Text>
+          <Text fontSize="xs" color={"gray.600"}>
+            {token.protocolSlug}
+          </Text>{" "}
+          {/*<Text mt={1} fontSize="sm" color="gray.600">*/}
+          {/*  TVL: ${(1.1).toFixed(1)}M*/}
+          {/*</Text>*/}
         </Box>
-        <Box textAlign="right">
-          <Text fontSize="lg" fontWeight="medium">
-            {pool.apy}% APY
-          </Text>
-          <HStack justify="end" gap={1} fontSize="sm">
-            {isPositive ? (
-              <TrendingUp className="h-4 w-4 text-green-500" />
-            ) : (
-              <TrendingDown className="h-4 w-4 text-red-500" />
-            )}
-            <Text color={isPositive ? "green.600" : "red.600"}>
-              {isPositive ? "+" : ""}
-              {apyDiff.toFixed(1)}% vs source
+
+        {token.apy > 0 && (
+          <Box textAlign="right">
+            <Text fontSize="lg" fontWeight="medium">
+              {token.apy.toFixed(2)}% APY
             </Text>
-          </HStack>
-        </Box>
+            <HStack
+              justify="end"
+              gap={1}
+              fontSize="sm"
+              color={isPositive ? "green.500" : "red.500"}
+            >
+              {isPositive ? <TrendingUp /> : <TrendingDown />}
+              {sourceApy > 0 && token.apy > 0 && (
+                <Text color={isPositive ? "green.600" : "red.600"}>
+                  {isPositive ? "+" : ""}
+                  {apyDiff.toFixed(2)}% vs source
+                </Text>
+              )}
+            </HStack>
+          </Box>
+        )}
       </HStack>
     </Box>
   );
 };
 
+const RenderSkeletons = () =>
+  [1, 2, 3].map((_, i) => (
+    <Skeleton rounded="xl" key={i} h={"110px"} w={"340px"} />
+  ));
+
 const usePositions = () => {
-  const { data: balances } = useEnsoBalances();
-  const positionsTokens = useEnsoTokenDetails(
-    balances
-      ?.filter(({ price, token }) => +price > 0 && isAddress(token))
-      .map((position) => position.token),
-  );
-  console.log(positionsTokens);
-  return balances
-    ?.map((position) => {
+  const { data: balances, isLoading: balancesLoading } = useEnsoBalances();
+  const notEmptyBalanceAddresses = balances
+    ?.filter(({ price, token }) => +price > 0 && isAddress(token))
+    .map((position) => position.token);
+  const { data: positionsTokens, isLoading: tokenLoading } =
+    useEnsoTokenDetails({
+      address: notEmptyBalanceAddresses,
+    });
+
+  const positions = balances
+    ?.map((balance) => {
       const token = positionsTokens?.find(
-        (token) => token.address === position.token,
+        (token) => token.address === balance.token,
       );
 
-      return { position, token };
+      return { balance, token };
     })
-    .filter(({ token, position }) => token?.type === "defi");
+    .filter(({ token }) => token?.type === "defi");
+
+  return {
+    positions,
+    isLoading: balancesLoading || tokenLoading,
+  };
 };
 
 const Home = () => {
-  const [selectedSource, setSelectedSource] = useState(null);
-  const [selectedTarget, setSelectedTarget] = useState(null);
+  const [selectedSource, setSelectedSource] = useState<Position>();
+  const [selectedTarget, setSelectedTarget] = useState<TokenData>();
   const { open, onOpen, onClose } = useDisclosure();
 
-  const positions = usePositions();
+  const { address } = useAccount();
+  const chainId = useChainId();
 
-  const sourcePools = positions?.map(({ position, token }) => ({
-    id: position.token,
-    protocol: token.protocolSlug,
-    asset: token.symbol,
-    amount: position.amount,
-    apy: token.apy,
-    tvl: "100000"
-  }));
+  useEffect(() => {
+    setSelectedSource(undefined);
+  }, [chainId, address]);
 
-  console.log(positions);
+  const { positions, isLoading: positionLoading } = usePositions();
+  const underlyingTokens = selectedSource?.token.underlyingTokens.map(
+    ({ address }) => address,
+  );
+  const { data: underlyingTokensData, isLoading: targetLoading } =
+    useEnsoTokenDetails({
+      underlyingTokens,
+    });
+
+  const filteredUnderlyingTokens = underlyingTokensData?.filter(
+    (token) =>
+      token.underlyingTokens.length === underlyingTokens.length &&
+      token.underlyingTokens.every((underlyingToken) =>
+        underlyingTokens.includes(underlyingToken.address),
+      ) &&
+      token.name !== selectedSource?.token.name &&
+      token.apy > 0,
+  );
+
+  console.log(filteredUnderlyingTokens);
 
   const handleTargetSelect = (target) => {
     setSelectedTarget(target);
@@ -203,44 +230,61 @@ const Home = () => {
 
           <HStack gap={6} w={"full"} align="start">
             {/* Source Pool Column */}
-            <Box w={300}>
+            <Box w={390}>
               <Card.Root>
                 <Card.Header>
                   <Heading size="md">Your positions</Heading>
                 </Card.Header>
-                <Card.Body>
-                  {sourcePools?.map((pool) => (
-                    <SourcePoolItem
-                      key={pool.id}
-                      pool={pool}
-                      isSelected={selectedSource?.id === pool.id}
-                      onClick={() => setSelectedSource(pool)}
-                    />
-                  ))}
+                <Card.Body gap={4}>
+                  {positionLoading ? (
+                    <RenderSkeletons />
+                  ) : positions.length === 0 ? (
+                    <Box
+                      display="flex"
+                      h="40"
+                      alignItems="center"
+                      justifyContent="center"
+                      color="gray.500"
+                    >
+                      <Text>No positions found</Text>
+                    </Box>
+                  ) : (
+                    positions?.map((position) => (
+                      <SourcePoolItem
+                        key={position.token.address}
+                        position={position}
+                        isSelected={
+                          selectedSource?.token.address ===
+                          position.token.address
+                        }
+                        onClick={() => setSelectedSource(position)}
+                      />
+                    ))
+                  )}
                 </Card.Body>
               </Card.Root>
             </Box>
 
             {/* Target Pool Column */}
-            <Box w={300}>
+            <Box w={390}>
               <Card.Root>
                 <Card.Header>
                   <Heading size="md">Target Pool</Heading>
                 </Card.Header>
-                <Card.Body>
+                <Card.Body gap={4}>
                   {selectedSource ? (
-                    targetPools[selectedSource.asset]
-                      .filter(
-                        (target) => target.protocol !== selectedSource.protocol,
-                      )
-                      .map((target, index) => (
+                    targetLoading ? (
+                      <RenderSkeletons />
+                    ) : (
+                      filteredUnderlyingTokens?.map((target) => (
                         <TargetPoolItem
-                          key={index}
-                          pool={target}
-                          sourceApy={selectedSource.apy}
+                          key={target.address}
+                          token={target}
+                          sourceApy={selectedSource?.token.apy}
                           onSelect={() => handleTargetSelect(target)}
                         />
                       ))
+                    )
                   ) : (
                     <Box
                       display="flex"
@@ -264,8 +308,8 @@ const Home = () => {
       <ConfirmDialog
         open={open}
         onOpenChange={onClose}
-        sourcePool={selectedSource}
-        targetPool={selectedTarget}
+        position={selectedSource}
+        targetToken={selectedTarget}
       />
     </Box>
   );
