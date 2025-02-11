@@ -1,4 +1,4 @@
-import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { TokenData } from "@ensofinance/sdk";
 import {
@@ -25,6 +25,7 @@ const ConfirmDialog = ({
   open: boolean;
   onOpenChange: (open: any) => void;
 }) => {
+  const bothApyExist = position?.token?.apy && targetToken?.apy;
   const sourceApy = position?.token?.apy;
   const apyDifference = (targetToken?.apy - sourceApy).toFixed(1);
   const apyPercentageGain = (
@@ -73,52 +74,58 @@ const ConfirmDialog = ({
             </HStack>
           </Box>
 
-          <Box>
-            <Heading size="sm">Expected Improvement</Heading>
-            <HStack mt={2} align="center" gap={2}>
-              <Text fontSize="2xl" fontWeight="semibold">
-                {apyDifference}%
-              </Text>
-              <Text color={+apyDifference > 0 ? "green.600" : "red.600"}>
-                {+apyDifference > 0 ? (
-                  <TrendingUp className="h-5 w-5" />
-                ) : (
-                  <TrendingDown className="h-5 w-5" />
-                )}
-              </Text>
-            </HStack>
-            <Text fontSize="sm" color="gray.600">
-              {apyPercentageGain}% improvement in APY
-            </Text>
-          </Box>
+          {bothApyExist && (
+            <Box>
+              <Heading size="sm">Expected Improvement</Heading>
+              <HStack mt={2} align="center" gap={2}>
+                <Text fontSize="2xl" fontWeight="semibold">
+                  {apyDifference}%
+                </Text>
+                <Text color={+apyDifference > 0 ? "green.600" : "red.600"}>
+                  {+apyDifference > 0 ? (
+                    <TrendingUp className="h-5 w-5" />
+                  ) : (
+                    <TrendingDown className="h-5 w-5" />
+                  )}
+                </Text>
+              </HStack>
+              {/*<Text fontSize="sm" color="gray.600">*/}
+              {/*  {apyPercentageGain}% improvement in APY*/}
+              {/*</Text>*/}
+            </Box>
+          )}
 
-          <Text fontSize="sm" color="gray.600">
-            Estimated gas cost: ~$20-30
-          </Text>
+          {/*<Text fontSize="sm" color="gray.600">*/}
+          {/*  Estimated gas cost: ~$20-30*/}
+          {/*</Text>*/}
         </VStack>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-
-          {approveNeeded && (
-            <Button
-              loading={approve.isLoading}
-              onClick={approve.write}
-              colorScheme="primary"
-            >
-              Approve
+          <Flex justify="space-between" w={"full"}>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
             </Button>
-          )}
-          <Button
-            disabled={!!approve}
-            loading={routeData.sendTransaction.isLoading}
-            onClick={routeData.sendTransaction.send}
-            colorScheme="primary"
-          >
-            Confirm Migration
-          </Button>
+
+            <Flex gap={4}>
+              {approveNeeded && (
+                <Button
+                  loading={approve.isLoading}
+                  onClick={approve.write}
+                  colorScheme="primary"
+                >
+                  Approve
+                </Button>
+              )}
+              <Button
+                disabled={!!approve || !routeData.routerData?.tx}
+                loading={routeData.sendTransaction.isLoading}
+                onClick={routeData.sendTransaction.send}
+                colorScheme="primary"
+              >
+                Confirm Migration
+              </Button>
+            </Flex>
+          </Flex>
         </DialogFooter>
       </DialogContent>
     </DialogRoot>

@@ -21,6 +21,7 @@ import { TokenData } from "@ensofinance/sdk";
 import { useEnsoBalances, useEnsoTokenDetails } from "@/service/enso";
 import { formatNumber, formatUSD, normalizeValue } from "@/service";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { Toaster } from "@/components/ui/toaster";
 import { Position } from "@/types";
 
 const SourcePoolItem = ({
@@ -214,6 +215,8 @@ const Home = () => {
 
   return (
     <Box minH="100vh">
+      <Toaster />
+
       <Center>
         <Box mx="auto" maxW="7xl" px={4} py={8}>
           <Heading
@@ -235,6 +238,7 @@ const Home = () => {
                 <Card.Header>
                   <Heading size="md">Your positions</Heading>
                 </Card.Header>
+
                 <Card.Body gap={4}>
                   {positionLoading ? (
                     <RenderSkeletons />
@@ -305,6 +309,7 @@ const Home = () => {
           </HStack>
         </Box>
       </Center>
+
       <ConfirmDialog
         open={open}
         onOpenChange={onClose}

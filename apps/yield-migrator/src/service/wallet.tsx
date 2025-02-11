@@ -13,23 +13,12 @@ import {
 } from "wagmi";
 import { Address, BaseError, erc20Abi } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
-import { QuoteParams, RouteData } from "@ensofinance/sdk";
-import { useEtherscanUrl, useTokenFromList } from "./common";
+import { RouteData, RouteParams } from "@ensofinance/sdk";
+import { toaster } from "@/components/ui/toaster";
+import { useEtherscanUrl } from "./common";
 import { ENSO_ROUTER_ADDRESS, ETH_ADDRESS } from "./constants";
 import { useEnsoToken } from "./enso";
 import { formatNumber, normalizeValue } from "./index";
-
-enum TxState {
-  Success,
-  Failure,
-  Pending,
-}
-
-export const toastState: Record<TxState, "success" | "error" | "info"> = {
-  [TxState.Success]: "success",
-  [TxState.Failure]: "error",
-  [TxState.Pending]: "info",
-};
 
 const useInterval = (callback: () => void, interval: number) => {
   const savedCallback = useCallback(callback, []);
@@ -105,18 +94,25 @@ export const useAllowance = (token: Address, spender: Address) => {
   return data?.toString() ?? "0";
 };
 
-export const useApprove = (token: Address, target: Address, amount: string) => {
-  const tokenData = useTokenFromList(token);
+export const useApprove = (
+  token: Address,
+  target: Address,
+  amount?: string,
+) => {
+  const tokenData = useEnsoToken(token);
   const chainId = useChainId();
 
+  // add one percent so yield tokens can be swapped without needing to approve again
+  const amountToApprove = (BigInt(amount ?? 0) * 101n) / 100n;
+
   return {
-    title: `Approve ${formatNumber(normalizeValue(amount, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
+    title: `Approve ${formatNumber(normalizeValue(amountToApprove, tokenData?.decimals))} of ${tokenData?.symbol} for spending`,
     args: {
       chainId,
       address: token,
       abi: erc20Abi,
       functionName: "approve",
-      args: [target, amount],
+      args: [target, amountToApprove],
     },
   };
 };
@@ -126,7 +122,6 @@ export const useExtendedContractWrite = (
   writeContractVariables: UseSimulateContractParameters,
 ) => {
   const contractWrite = useWatchWriteTransactionHash(title);
-  // const { setNotification } = useStore();
 
   const write = useCallback(() => {
     if (
@@ -138,10 +133,10 @@ export const useExtendedContractWrite = (
       // @ts-ignore
       contractWrite.writeContract(writeContractVariables, {
         onError: (error: BaseError) => {
-          // setNotification({
-          //   message: error?.shortMessage || error.message,
-          //   variant: NotifyType.Error,
-          // });
+          toaster.create({
+            title: error?.shortMessage || error.message,
+            type: "error",
+          });
           console.error(error);
         },
       });
@@ -163,7 +158,6 @@ const useWatchTransactionHash = <
   // const addRecentTransaction = useAddRecentTransaction();
 
   const { data: hash, reset } = usedWriteContract;
-  // const { setNotification } = useStore();
 
   // useEffect(() => {
   //   if (hash) addRecentTransaction({ hash, description });
@@ -172,32 +166,29 @@ const useWatchTransactionHash = <
   const waitForTransaction = useWaitForTransactionReceipt({
     hash,
   });
-  const link = useEtherscanUrl(hash);
+  // const link = useEtherscanUrl(hash);
 
   const writeLoading = usedWriteContract.status === "pending";
 
   // toast error if tx failed to be mined and success if it is having confirmation
   useEffect(() => {
     if (waitForTransaction.error) {
-      // setNotification({
-      //   message: waitForTransaction.error.message,
-      //   variant: NotifyType.Error,
-      //   link,
-      // });
+      toaster.create({
+        title: waitForTransaction.error.message,
+        type: "error",
+      });
     } else if (waitForTransaction.data) {
       // reset tx hash to eliminate recurring notifications
       reset();
-      // setNotification({
-      //   message: description,
-      //   variant: NotifyType.Success,
-      //   link,
-      // });
+      toaster.create({
+        title: description,
+        type: "success",
+      });
     } else if (waitForTransaction.isLoading) {
-      // setNotification({
-      //   message: description,
-      //   variant: NotifyType.Loading,
-      //   link,
-      // });
+      toaster.create({
+        title: description,
+        type: "info",
+      });
     }
   }, [
     waitForTransaction.data,
@@ -228,23 +219,22 @@ const useWatchWriteTransactionHash = (description: string) => {
 
 export const useExtendedSendTransaction = (
   title: string,
-  args: UseSimulateContractParameters,
+  txData: UseSimulateContractParameters,
 ) => {
   const sendTransaction = useWatchSendTransactionHash(title);
-  // const { setNotification } = useStore();
 
   const send = useCallback(() => {
-    sendTransaction.sendTransaction(args, {
+    sendTransaction.sendTransaction(txData, {
       onError: (error) => {
-        // setNotification({
-        //   // @ts-ignore
-        //   message: error?.cause?.shortMessage,
-        //   variant: NotifyType.Error,
-        // });
+        toaster.create({
+          // @ts-ignore
+          title: error?.cause?.shortMessage,
+          type: "error",
+        });
         console.error(error);
       },
     });
-  }, [sendTransaction, args]);
+  }, [sendTransaction, txData]);
 
   return {
     ...sendTransaction,
@@ -262,12 +252,12 @@ export const useApproveIfNecessary = (tokenIn: Address, amount: string) => {
 
   if (tokenIn === ETH_ADDRESS) return undefined;
 
-  return +allowance < +amount ? writeApprove : undefined;
+  return +allowance <= +amount ? writeApprove : undefined;
 };
 
 export const useSendEnsoTransaction = (
   ensoTxData: RouteData["tx"],
-  params: Pick<QuoteParams, "tokenIn" | "tokenOut" | "amountIn">,
+  params: Pick<RouteParams, "tokenIn" | "tokenOut" | "amountIn">,
 ) => {
   const tokenData = useEnsoToken(params.tokenOut);
   const tokenFromData = useEnsoToken(params.tokenIn);
