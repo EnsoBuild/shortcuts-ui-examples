@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   useAccount,
-  useBalance, useChainId,
+  useBalance,
+  useChainId,
   useReadContract,
   useSendTransaction,
   UseSendTransactionReturnType,
@@ -10,14 +11,13 @@ import {
   useWriteContract,
   UseWriteContractReturnType,
 } from "wagmi";
-import {Address, BaseError, erc20Abi} from "viem";
+import { Address, BaseError, erc20Abi } from "viem";
 import { useQueryClient } from "@tanstack/react-query";
 import { QuoteParams, RouteData } from "@ensofinance/sdk";
 import { useEtherscanUrl, useTokenFromList } from "./common";
-import { ETH_ADDRESS } from "./constants";
+import { ENSO_ROUTER_ADDRESS, ETH_ADDRESS } from "./constants";
 import { useEnsoToken } from "./enso";
 import { formatNumber, normalizeValue } from "./index";
-
 
 enum TxState {
   Success,
@@ -252,13 +252,9 @@ export const useExtendedSendTransaction = (
   };
 };
 
-export const useApproveIfNecessary = (
-  tokenIn: Address,
-  target: Address,
-  amount: string,
-) => {
-  const allowance = useAllowance(tokenIn, target);
-  const approveData = useApprove(tokenIn, target, amount);
+export const useApproveIfNecessary = (tokenIn: Address, amount: string) => {
+  const allowance = useAllowance(tokenIn, ENSO_ROUTER_ADDRESS);
+  const approveData = useApprove(tokenIn, ENSO_ROUTER_ADDRESS, amount);
   const writeApprove = useExtendedContractWrite(
     approveData.title,
     approveData.args,

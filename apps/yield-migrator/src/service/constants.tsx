@@ -139,21 +139,4 @@ export const MAINNET_ZAP_INPUT_TOKENS: Address[] = [
   ETH_ADDRESS,
 ];
 
-enum TOKEN_NAMES {
-  WETH = "WETH",
-  USDC = "USDC",
-  WBTC = "WBTC",
-  USDT = "USDT",
-  beraSTONE = "beraSTONE",
-  PEPE = "PEPE",
-  DAI = "DAI",
-  UNI = "UNI",
-  cbBTC = "cbBTC",
-  LINK = "LINK",
-  LBTC = "LBTC",
-  wstETH = "wstETH",
-  rETH = "rETH",
-  USDe = "USDe",
-  ETH = "ETH",
-
-}
+export const ENSO_ROUTER_ADDRESS = "0x80eba3855878739f4710233a8a19d89bdd2ffb8e";

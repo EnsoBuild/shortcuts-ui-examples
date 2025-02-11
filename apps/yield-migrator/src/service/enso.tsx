@@ -38,35 +38,42 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-export const useEnsoData = (params: QuoteParams, slippage: number) => {
+export const useEnsoData = (
+  amountIn: string,
+  tokenIn: Address,
+  tokenOut: Address,
+  slippage = 25, // 0.25%
+) => {
+  const { address } = useAccount();
+  const chainId = useChainId();
+  const routerParams: RouteParams = {
+    amountIn,
+    tokenIn,
+    tokenOut,
+    slippage,
+    fromAddress: address,
+    receiver: address,
+    spender: address,
+    routingStrategy: "router",
+    chainId,
+  };
   if (
-    ONEINCH_ONLY_TOKENS.includes(params.tokenIn) ||
-    ONEINCH_ONLY_TOKENS.includes(params.tokenOut)
+    ONEINCH_ONLY_TOKENS.includes(tokenIn) ||
+    ONEINCH_ONLY_TOKENS.includes(tokenOut)
   ) {
     // @ts-ignore
-    params.ignoreAggregators =
+    routerParams.ignoreAggregators =
       "0x,paraswap,openocean,odos,kyberswap,native,barter";
   }
 
-  const routerParams: RouteParams = {
-    ...params,
-    slippage,
-    fromAddress: params.fromAddress,
-    receiver: params.fromAddress,
-    spender: params.fromAddress,
-  };
-
   const { data: routerData, isLoading: routerLoading } =
     useEnsoRouterData(routerParams);
-  const { data: quoteData, isLoading: quoteLoading } = useEnsoQuote(params);
 
-  const sendTransaction = useSendEnsoTransaction(routerData?.tx, params);
+  const sendTransaction = useSendEnsoTransaction(routerData?.tx, routerParams);
 
   return {
     routerData,
     routerLoading,
-    quoteData,
-    quoteLoading,
     sendTransaction,
   };
 };

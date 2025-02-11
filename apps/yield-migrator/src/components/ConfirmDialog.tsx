@@ -1,4 +1,4 @@
-import { Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { TokenData } from "@ensofinance/sdk";
 import {
@@ -9,7 +9,10 @@ import {
   DialogRoot,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Position } from "@/types";
+import { useEnsoData } from "@/service/enso";
+import { useApproveIfNecessary } from "@/service/wallet";
 
 const ConfirmDialog = ({
   open,
@@ -28,6 +31,20 @@ const ConfirmDialog = ({
     ((targetToken?.apy - sourceApy) / sourceApy) *
     100
   ).toFixed(1);
+
+  const routeData = useEnsoData(
+    position?.balance.amount,
+    position?.token.address,
+    targetToken?.address,
+  );
+
+  const approve = useApproveIfNecessary(
+    position?.token.address,
+    position?.balance.amount,
+  );
+
+  const approveNeeded =
+    !!approve && +position?.balance.amount > 0 && !!position?.token.address;
 
   return (
     <DialogRoot open={open} onOpenChange={onOpenChange}>
@@ -84,7 +101,24 @@ const ConfirmDialog = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button>Confirm Migration</Button>
+
+          {approveNeeded && (
+            <Button
+              loading={approve.isLoading}
+              onClick={approve.write}
+              colorScheme="primary"
+            >
+              Approve
+            </Button>
+          )}
+          <Button
+            disabled={!!approve}
+            loading={routeData.sendTransaction.isLoading}
+            onClick={routeData.sendTransaction.send}
+            colorScheme="primary"
+          >
+            Confirm Migration
+          </Button>
         </DialogFooter>
       </DialogContent>
     </DialogRoot>
