@@ -27,8 +27,8 @@ importers:
         specifier: ^11.13.5
         version: 11.14.0(@types/react@18.3.12)(react@18.3.1)
       '@ensofinance/sdk':
-        specifier: 1.0.10
-        version: 1.0.10
+        specifier: 1.0.13
+        version: 1.0.13
       '@ensofinance/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -412,9 +412,6 @@ packages:
 
   '@emotion/weak-memoize@0.4.0':
     resolution: {integrity: sha512-snKqtPW01tN0ui7yu9rGv69aJXr/a/Ywvl11sUjNtEcRc+ng/mQriFL0wLXMef74iHa/EkftbDzU9F8iFbH+zg==}
-
-  '@ensofinance/sdk@1.0.10':
-    resolution: {integrity: sha512-rpW3fbIaTPI6FZs+ia+VwUWlRaBP1XcGU3uK7u/u5YBcsFw8gRqECjBRAFStMJgS5T/q4QKYxP+D54J/YhDTbQ==}
 
   '@ensofinance/sdk@1.0.13':
     resolution: {integrity: sha512-xaZgFFaMvzcvZ/dRzzeV7YdyAGwSWA26VzuWQO8Msll5nfTx926/rErt6MDdqr1WAo0iabwX4E38ih28qKpIVg==}
@@ -5261,13 +5258,6 @@ snapshots:
   '@emotion/utils@1.4.2': {}
 
   '@emotion/weak-memoize@0.4.0': {}
-
-  '@ensofinance/sdk@1.0.10':
-    dependencies:
-      axios: 1.7.9
-      prettier: 3.4.2
-    transitivePeerDependencies:
-      - debug
 
   '@ensofinance/sdk@1.0.13':
     dependencies:

@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { base } from "viem/chains";
 import { useMemo, useState, ReactNode } from "react";
-import { useSwitchChain, useAccount, useChainId } from "wagmi";
+import { useSwitchChain, useAccount } from "wagmi";
 import { usePrivy } from "@privy-io/react-auth";
 import Image from "next/image";
 import { Spoiler } from "spoiled";
@@ -25,7 +25,7 @@ import {
   useSendEnsoTransaction,
   useTokenBalance,
 } from "@/util/hooks/wallet";
-import { useEnsoApprove, useEnsoQuote } from "@/util/hooks/enso";
+import { useEnsoApprove } from "@/util/hooks/enso";
 import {
   denormalizeValue,
   formatNumber,
@@ -96,8 +96,16 @@ const LuckyDeFi = () => {
     return selectedList[index] as Address;
   }, [selectedCategory]);
 
-  const { sendTransaction: sendData, isFetchingEnsoData } =
-    useSendEnsoTransaction(swapAmount, randomToken, tokenIn, DEFAULT_SLIPPAGE);
+  const {
+    sendTransaction: sendData,
+    isFetchingEnsoData,
+    ensoData,
+  } = useSendEnsoTransaction(
+    swapAmount,
+    randomToken,
+    tokenIn,
+    DEFAULT_SLIPPAGE,
+  );
   const tokenOutInfo = useTokenFromList(randomToken as Address);
 
   const wrongChain = chainId !== base.id;
@@ -105,15 +113,10 @@ const LuckyDeFi = () => {
   const needLogin = ready && !address;
   const approveNeeded = !!approve && +swapAmount > 0 && !!tokenIn;
 
-  const { data: quoteData } = useEnsoQuote({
-    chainId: base.id,
-    fromAddress: address,
-    amountIn: swapAmount,
-    tokenIn: tokenIn,
-    tokenOut: randomToken,
-    routingStrategy: "router",
-  });
-  const valueOut = normalizeValue(quoteData?.amountOut, tokenOutInfo?.decimals);
+  const valueOut = normalizeValue(
+    ensoData?.amountOut.toString(),
+    tokenOutInfo?.decimals,
+  );
   const exchangeRate = +valueOut / +swapValue;
 
   const SkeletonLoader = ({
@@ -289,7 +292,7 @@ const LuckyDeFi = () => {
                 <Flex justify="space-between">
                   <Text color="gray.600">Price impact:</Text>
                   <Text>
-                    -{((quoteData?.priceImpact ?? 0) / 100).toFixed(2)}%
+                    -{((ensoData?.priceImpact ?? 0) / 100).toFixed(2)}%
                   </Text>
                 </Flex>
 

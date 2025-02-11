@@ -54,24 +54,3 @@ export const useEnsoRouterData = (params: RouteParams) => {
       isAddress(params.tokenOut),
   });
 };
-
-export const useEnsoQuote = (params: QuoteParams) => {
-  const debouncedAmount = useDebounce(params.amountIn, 500);
-
-  return useQuery({
-    queryKey: [
-      "enso-quote",
-      params.chainId,
-      params.fromAddress,
-      debouncedAmount,
-      params.tokenIn,
-      params.tokenOut,
-    ],
-    queryFn: () => ensoClient.getQuoteData(params),
-    enabled:
-      +debouncedAmount > 0 &&
-      isAddress(params.fromAddress) &&
-      isAddress(params.tokenIn) &&
-      isAddress(params.tokenOut),
-  });
-};

@@ -37,8 +37,7 @@ it uses React, Next.js, Wagmi, Privy, Chakra-UI, and `@ensofinance/sdk-ts` to ac
 #### enso.tsx
 
 - **useEnsoApprove**: Used to get approval data for a token.
-- **useEnsoQuote**: Used to get a quote for a token swap.
-- **useEnsoRouterData**: Used to get router data for a token swap.
+- **useEnsoRouterData**: Used to get quote, price impact and transaction data for a token swap.
 
 #### common.tsx
 
