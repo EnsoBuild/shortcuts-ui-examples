@@ -1,0 +1,9 @@
+{
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/yield/:path*",
+      "destination": "/:path*"
+    }
+  ]
+}
