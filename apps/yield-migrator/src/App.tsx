@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { setApiKey } from "@/service/enso";
 import Providers from "@/Providers";
 
+import logoUrl from "./logo_black_white.png";
+
 function App() {
   useEffect(() => {
     setApiKey(import.meta.env.VITE_ENSO_API_KEY);
@@ -18,7 +20,7 @@ function App() {
             margin: "5px",
           }}
         >
-          <div />
+          <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
 
           <ConnectButton />
         </div>
