@@ -19,6 +19,7 @@ function App() {
           }}
         >
           <div />
+
           <ConnectButton />
         </div>
         <Home />
