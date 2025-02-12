@@ -1,8 +1,0 @@
-{
-  "routes": [
-    {
-      "src": "/yield/(.*)",
-      "dest": "/yield/index.html"
-    }
-  ]
-}
