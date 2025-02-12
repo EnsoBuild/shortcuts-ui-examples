@@ -1,4 +1,8 @@
 {
-  "trailingSlash": false,
-  "rewrites": [{ "source": "/:path*", "destination": "/index.html" }]
+  "routes": [
+    {
+      "src": "/yield/(.*)",
+      "dest": "/yield/index.html"
+    }
+  ]
 }
