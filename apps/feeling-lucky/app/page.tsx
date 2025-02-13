@@ -158,7 +158,7 @@ const LuckyDeFi = () => {
             I'm feeling lucky
           </Heading>
           <Text color="gray.500" textAlign="center">
-            Randomly allocate your capital across the DeFi and meme tokens
+            Randomly allocate your capital across DeFi, Meme, and DeFAI tokens
           </Text>
 
           <Box borderWidth={1} borderRadius="lg" w="container.sm" p={4}>
