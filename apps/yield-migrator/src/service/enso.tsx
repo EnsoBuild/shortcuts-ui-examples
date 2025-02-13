@@ -44,15 +44,18 @@ export const useEnsoData = ({
   tokenIn,
   tokenOut,
   slippage = DEFAULT_SLIPPAGE,
+  active,
 }: {
   amountIn: string;
   tokenIn: Address;
   tokenOut: Address;
   slippage?: number;
   chainId?: number;
+  active?: boolean;
 }) => {
   const { address } = useAccount();
   const wagmiChainId = useChainId();
+  const addressToUse = address ?? "0x0000000000000000000000000000000000000001";
 
   if (!chainId) chainId = wagmiChainId;
 
@@ -61,9 +64,9 @@ export const useEnsoData = ({
     tokenIn,
     tokenOut,
     slippage,
-    fromAddress: address,
-    receiver: address,
-    spender: address,
+    fromAddress: addressToUse,
+    receiver: addressToUse,
+    spender: addressToUse,
     routingStrategy: "router",
     chainId,
   };
@@ -76,8 +79,10 @@ export const useEnsoData = ({
       "0x,paraswap,openocean,odos,kyberswap,native,barter";
   }
 
-  const { data: routeData, isLoading: routeLoading } =
-    useEnsoRouterData(routerParams);
+  const { data: routeData, isLoading: routeLoading } = useEnsoRouterData(
+    routerParams,
+    active,
+  );
 
   const sendTransaction = useSendEnsoTransaction(routeData?.tx, routerParams);
 
@@ -88,7 +93,7 @@ export const useEnsoData = ({
   };
 };
 
-const useEnsoRouterData = (params: RouteParams) =>
+const useEnsoRouterData = (params: RouteParams, active?: boolean) =>
   useQuery({
     queryKey: [
       "enso-router",
@@ -100,6 +105,7 @@ const useEnsoRouterData = (params: RouteParams) =>
     ],
     queryFn: () => ensoClient.getRouterData(params),
     enabled:
+      active &&
       +params.amountIn > 0 &&
       isAddress(params.fromAddress) &&
       isAddress(params.tokenIn) &&

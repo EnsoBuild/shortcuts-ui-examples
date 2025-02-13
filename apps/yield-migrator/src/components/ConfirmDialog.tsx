@@ -51,6 +51,7 @@ const ConfirmDialog = ({
     tokenIn: position?.token.address,
     tokenOut: targetToken?.address,
     chainId: position?.token.chainId,
+    active: open,
   });
 
   const approve = useApproveIfNecessary(
@@ -109,6 +110,7 @@ const ConfirmDialog = ({
                   <Text fontSize="2xl" fontWeight="semibold">
                     {apyDifference}%
                   </Text>
+
                   <Text color={+apyDifference > 0 ? "green.600" : "red.600"}>
                     {+apyDifference > 0 ? (
                       <TrendingUp className="h-5 w-5" />
