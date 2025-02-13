@@ -136,6 +136,7 @@ const LuckyDeFi = () => {
           width={40}
           height={40}
         />
+
         <Flex gap={5} align="center">
           <ColorModeButton />
           <WalletButton />
@@ -143,7 +144,7 @@ const LuckyDeFi = () => {
       </Flex>
 
       <Center h={"full"}>
-        <VStack gap={4} align="flex-start" mt={-100}>
+        <VStack gap={4} align="flex-start">
           <Box opacity={0.7} mt={5}>
             <Image
               src={`${process.env.NEXT_PUBLIC_BASE_PATH}/wordmark_gradient.png`}
