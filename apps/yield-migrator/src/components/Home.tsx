@@ -207,14 +207,14 @@ const useTargetTokens = (
 const Home = () => {
   const [selectedSource, setSelectedSource] = useState<Position>();
   const [selectedTarget, setSelectedTarget] = useState<TokenData>();
-  const [positionsMocked, setPositionsMocked] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
   const { open, onOpen, onClose } = useDisclosure();
   const { address } = useAccount();
   const chainId = useChainId();
 
   useEffect(() => {
     setSelectedSource(undefined);
-  }, [chainId, address, positionsMocked]);
+  }, [chainId, address, isDemo]);
 
   const underlyingTokens = selectedSource?.token.underlyingTokens.map(
     ({ address }) => address,
@@ -225,10 +225,10 @@ const Home = () => {
   const { filteredUnderlyingTokens, targetLoading } = useTargetTokens(
     underlyingTokens,
     selectedSource?.token.name,
-    positionsMocked ? 8453 : chainId,
+    isDemo ? 8453 : chainId,
   );
 
-  const positionsToUse = positionsMocked ? MOCK_POSITIONS : positions;
+  const positionsToUse = isDemo ? MOCK_POSITIONS : positions;
 
   const handleTargetSelect = (target) => {
     setSelectedTarget(target);
@@ -264,8 +264,8 @@ const Home = () => {
               cursor="pointer"
               border={"2px solid"}
               fontWeight={"medium"}
-              borderColor={positionsMocked ? "blue.500" : "transparent"}
-              onClick={() => setPositionsMocked(!positionsMocked)}
+              borderColor={isDemo ? "blue.500" : "transparent"}
+              onClick={() => setIsDemo((val) => !val)}
             >
               Use demo positions
             </Box>
@@ -360,6 +360,7 @@ const Home = () => {
         onOpenChange={onClose}
         position={selectedSource}
         targetToken={selectedTarget}
+        isDemo={isDemo}
       />
     </Box>
   );

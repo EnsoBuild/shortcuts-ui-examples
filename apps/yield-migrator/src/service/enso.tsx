@@ -38,14 +38,24 @@ export const useEnsoApprove = (tokenAddress: Address, amount: string) => {
   });
 };
 
-export const useEnsoData = (
-  amountIn: string,
-  tokenIn: Address,
-  tokenOut: Address,
+export const useEnsoData = ({
+  chainId,
+  amountIn,
+  tokenIn,
+  tokenOut,
   slippage = DEFAULT_SLIPPAGE,
-) => {
+}: {
+  amountIn: string;
+  tokenIn: Address;
+  tokenOut: Address;
+  slippage?: number;
+  chainId?: number;
+}) => {
   const { address } = useAccount();
-  const chainId = useChainId();
+  const wagmiChainId = useChainId();
+
+  if (!chainId) chainId = wagmiChainId;
+
   const routerParams: RouteParams = {
     amountIn,
     tokenIn,
@@ -66,14 +76,14 @@ export const useEnsoData = (
       "0x,paraswap,openocean,odos,kyberswap,native,barter";
   }
 
-  const { data: routerData, isLoading: routerLoading } =
+  const { data: routeData, isLoading: routeLoading } =
     useEnsoRouterData(routerParams);
 
-  const sendTransaction = useSendEnsoTransaction(routerData?.tx, routerParams);
+  const sendTransaction = useSendEnsoTransaction(routeData?.tx, routerParams);
 
   return {
-    routerData,
-    routerLoading,
+    routeData,
+    routeLoading,
     sendTransaction,
   };
 };
