@@ -14,12 +14,14 @@ import {
   Card,
   Center,
   Skeleton,
+  Flex,
 } from "@chakra-ui/react";
-import { isAddress } from "viem";
+import { Address, isAddress } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { TokenData } from "@ensofinance/sdk";
 import { useEnsoBalances, useEnsoTokenDetails } from "@/service/enso";
 import { formatNumber, formatUSD, normalizeValue } from "@/service";
+import { MOCK_POSITIONS } from "@/service/constants";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Toaster } from "@/components/ui/toaster";
 import { Position } from "@/types";
@@ -53,11 +55,12 @@ const SourcePoolItem = ({
       <HStack justify="space-between" align="start">
         <Box>
           <Text fontSize="md">{position.token.name}</Text>
+
           <Text fontSize="xs" color={"gray.600"}>
             {position.token.protocolSlug}
           </Text>
 
-          <Text color="gray.600">
+          <Text>
             {position.token.underlyingTokens
               .map(({ symbol }) => symbol)
               .join("/")}
@@ -67,18 +70,18 @@ const SourcePoolItem = ({
           {/*  TVL: ${(1.1).toFixed(1)}M*/}
           {/*</Text>*/}
         </Box>
+
         <Box textAlign="right">
           <Text fontWeight="medium">
             {formatUSD(+normalizedBalance * +position.balance.price)}
           </Text>
-          <Text>
+
+          <Text fontSize="sm" color="gray.600">
             {formatNumber(normalizedBalance)} {position.token.symbol}
           </Text>
 
           {position.token.apy > 0 && (
-            <Text fontSize="sm" color="gray.600">
-              {position.token.apy.toFixed(2)}% APY
-            </Text>
+            <Text>{position.token.apy.toFixed(2)}% APY</Text>
           )}
         </Box>
       </HStack>
@@ -157,6 +160,7 @@ const usePositions = () => {
   const { data: positionsTokens, isLoading: tokenLoading } =
     useEnsoTokenDetails({
       address: notEmptyBalanceAddresses,
+      type: "defi",
     });
 
   const positions = balances
@@ -167,35 +171,25 @@ const usePositions = () => {
 
       return { balance, token };
     })
-    .filter(({ token }) => token?.type === "defi");
+    .filter(({ token }) => token);
+
+  const positionsLoading = balancesLoading || tokenLoading;
 
   return {
     positions,
-    isLoading: balancesLoading || tokenLoading,
+    positionsLoading,
   };
 };
 
-
-
-const Home = () => {
-  const [selectedSource, setSelectedSource] = useState<Position>();
-  const [selectedTarget, setSelectedTarget] = useState<TokenData>();
-  const { open, onOpen, onClose } = useDisclosure();
-
-  const { address } = useAccount();
-  const chainId = useChainId();
-
-  useEffect(() => {
-    setSelectedSource(undefined);
-  }, [chainId, address]);
-
-  const { positions, isLoading: positionLoading } = usePositions();
-  const underlyingTokens = selectedSource?.token.underlyingTokens.map(
-    ({ address }) => address,
-  );
+const useTargetTokens = (
+  underlyingTokens: Address[],
+  currentTokenName: string,
+  chainId?: number,
+) => {
   const { data: underlyingTokensData, isLoading: targetLoading } =
     useEnsoTokenDetails({
       underlyingTokens,
+      chainId,
     });
 
   const filteredUnderlyingTokens = underlyingTokensData?.filter(
@@ -204,16 +198,44 @@ const Home = () => {
       token.underlyingTokens?.every((underlyingToken) =>
         underlyingTokens.includes(underlyingToken.address),
       ) &&
-      token.name !== selectedSource?.token.name &&
+      token.name !== currentTokenName &&
       token.apy > 0,
   );
+  return { filteredUnderlyingTokens, targetLoading };
+};
 
-  console.log(filteredUnderlyingTokens);
+const Home = () => {
+  const [selectedSource, setSelectedSource] = useState<Position>();
+  const [selectedTarget, setSelectedTarget] = useState<TokenData>();
+  const [positionsMocked, setPositionsMocked] = useState(false);
+  const { open, onOpen, onClose } = useDisclosure();
+  const { address } = useAccount();
+  const chainId = useChainId();
+
+  useEffect(() => {
+    setSelectedSource(undefined);
+  }, [chainId, address, positionsMocked]);
+
+  const underlyingTokens = selectedSource?.token.underlyingTokens.map(
+    ({ address }) => address,
+  );
+
+  const { positions, positionsLoading } = usePositions();
+
+  const { filteredUnderlyingTokens, targetLoading } = useTargetTokens(
+    underlyingTokens,
+    selectedSource?.token.name,
+    positionsMocked ? 8453 : chainId,
+  );
+
+  const positionsToUse = positionsMocked ? MOCK_POSITIONS : positions;
 
   const handleTargetSelect = (target) => {
     setSelectedTarget(target);
     onOpen();
   };
+
+  console.log(positions);
 
   return (
     <Box minH="100vh">
@@ -221,17 +243,33 @@ const Home = () => {
 
       <Center>
         <Box mx="auto" maxW="7xl" px={4} py={8}>
-          <Heading
-            mb={8}
-            display="flex"
-            alignItems="center"
-            gap={2}
-            fontSize="2xl"
-            fontWeight="bold"
-          >
-            <ArrowRightLeft className="h-6 w-6" />
-            Yield Migrator
-          </Heading>
+          <Flex align="center" gap={5} mb={5}>
+            <Box>
+              <Heading
+                display="flex"
+                alignItems="center"
+                gap={2}
+                fontSize="2xl"
+                fontWeight="bold"
+              >
+                <ArrowRightLeft className="h-6 w-6" />
+                Yield Migrator
+              </Heading>
+            </Box>
+
+            <Box
+              p={4}
+              shadow="sm"
+              rounded="xl"
+              cursor="pointer"
+              border={"2px solid"}
+              fontWeight={"medium"}
+              borderColor={positionsMocked ? "blue.500" : "transparent"}
+              onClick={() => setPositionsMocked(!positionsMocked)}
+            >
+              Use demo positions
+            </Box>
+          </Flex>
 
           <HStack gap={6} w={"full"} align="start">
             {/* Source Pool Column */}
@@ -242,10 +280,10 @@ const Home = () => {
                 </Card.Header>
 
                 <Card.Body gap={4}>
-                  {positionLoading ? (
+                  {positionsLoading ? (
                     <RenderSkeletons />
-                  ) : positions && positions.length > 0 ? (
-                    positions?.map((position) => (
+                  ) : positionsToUse?.length > 0 ? (
+                    positionsToUse.map((position) => (
                       <SourcePoolItem
                         key={position.token.address}
                         position={position}
@@ -264,7 +302,11 @@ const Home = () => {
                       justifyContent="center"
                       color="gray.500"
                     >
-                      <Text>No positions found</Text>
+                      {address ? (
+                        <Text>No positions found</Text>
+                      ) : (
+                        <Text>Connect your wallet or use demo to continue</Text>
+                      )}
                     </Box>
                   )}
                 </Card.Body>

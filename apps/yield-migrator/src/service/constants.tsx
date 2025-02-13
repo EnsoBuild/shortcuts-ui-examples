@@ -1,16 +1,3 @@
-import { Address } from "viem";
-import {
-  arbitrum,
-  avalanche,
-  base,
-  bsc,
-  gnosis,
-  linea,
-  mainnet,
-  optimism,
-  polygon,
-  zksync,
-} from "viem/chains";
 import { Token } from "./common";
 
 export const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
@@ -80,19 +67,6 @@ export const CHAINS_ETHERSCAN: Record<SupportedChainId, string> = {
   [SupportedChainId.AVALANCHE]: "https://cchain.explorer.avax.network",
 };
 
-export const USDC_ADDRESS: Record<SupportedChainId, Address> = {
-  [mainnet.id]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  [arbitrum.id]: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
-  [base.id]: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
-  [zksync.id]: "0x1d17cbcf0d6d143135ae902365d2e5e2a16538d4",
-  [optimism.id]: "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
-  [linea.id]: "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
-  [polygon.id]: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
-  [avalanche.id]: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-  [gnosis.id]: "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
-  [bsc.id]: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-};
-
 export const NATIVE_ETH_CHAINS = [
   SupportedChainId.MAINNET,
   SupportedChainId.ARBITRUM_ONE,
@@ -102,17 +76,6 @@ export const NATIVE_ETH_CHAINS = [
   SupportedChainId.ZKSYNC,
 ];
 
-export const SWAP_LIMITS: Record<Address, number> = {
-  ["0x09def5abc67e967d54e8233a4b5ebbc1b3fbe34b"]: 100000, // WABTC limit
-};
-
-export const SWAP_REDIRECT_TOKENS: Address[] = [
-  "0x09def5abc67e967d54e8233a4b5ebbc1b3fbe34b", // WABTC
-];
-export const LP_REDIRECT_TOKENS: Record<Address, string> = {
-  ["0x42a094364bbdca0efac8af2cf7d6b9ec885ee554"]:
-    "https://app.uniswap.org/positions/create/v2?currencyA=0x09DEF5aBc67e967d54E8233A4b5EBBc1B3fbE34b&currencyB=0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599&chain=ethereum", // WABTC
-};
 export const ONEINCH_ONLY_TOKENS = [
   "0xcf21354360fdae8edad02c0529e55cb3e71c36c9",
   "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3",
@@ -121,22 +84,235 @@ export const ONEINCH_ONLY_TOKENS = [
 export const PRICE_IMPACT_WARN_THRESHOLD = 100; // basis points
 export const DEFAULT_SLIPPAGE = 25; // 0.25%
 
-export const MAINNET_ZAP_INPUT_TOKENS: Address[] = [
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
-  "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
-  "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
-  "0x97ad75064b20fb2b2447fed4fa953bf7f007a706", // beraSTONE
-  "0x6982508145454ce325ddbe47a25d4ec3d2311933", // PEPE
-  "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
-  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984", // UNI
-  "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf", // cbBTC
-  "0x514910771af9ca656af840dff83e8264ecf986ca", // LINK
-  "0x8236a87084f8b84306f72007f36f2618a5634494", // LBTC
-  "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", // wstETH
-  "0xae78736cd615f374d3085123a210448e74fc6393", // rETH
-  "0x4c9edd5852cd905f086c759e8383e09bff1e68b3", // USDe
-  ETH_ADDRESS,
-];
-
 export const ENSO_ROUTER_ADDRESS = "0x80eba3855878739f4710233a8a19d89bdd2ffb8e";
+
+export const MOCK_POSITIONS = [
+  {
+    balance: {
+      amount: "300025930",
+      decimals: 6,
+      price: 1,
+    },
+    token: {
+      address: "0x4e65fe4dba92790696d040ac24aa414708f5c0ab",
+      chainId: 8453,
+      decimals: 6,
+      apy: 4.22851,
+      logosUri: [],
+      name: "Aave Base USDC",
+      primaryAddress: "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5",
+      protocolSlug: "aave-v3",
+      symbol: "aBasUSDC",
+      type: "defi",
+      underlyingTokens: [
+        {
+          address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          chainId: 8453,
+          decimals: 6,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696560694",
+          ],
+          name: "USDC",
+          symbol: "USDC",
+          type: "base",
+        },
+      ],
+    },
+  },
+  {
+    balance: {
+      amount: "2563564008936685",
+      decimals: 18,
+      price: 116371.0765373658,
+    },
+    token: {
+      address: "0x543257ef2161176d7c8cd90ba65c2d4caef5a796",
+      chainId: 8453,
+      decimals: 18,
+      apy: null,
+      logosUri: [
+        "https://assets.coingecko.com/coins/images/40143/thumb/cbbtc.webp?1726136727",
+      ],
+      name: "Moonwell Frontier cBTC",
+      primaryAddress: "0x543257ef2161176d7c8cd90ba65c2d4caef5a796",
+      protocolSlug: "morpho-blue-vaults",
+      symbol: "mwCBTC",
+      type: "defi",
+      underlyingTokens: [
+        {
+          address: "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+          chainId: 8453,
+          decimals: 18,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/40143/thumb/cbbtc.webp?1726136727",
+          ],
+          name: "Coinbase Wrapped BTC",
+          symbol: "cBBTC",
+          type: "base",
+        },
+      ],
+    },
+  },
+  {
+    balance: {
+      amount: "934323014800",
+      decimals: 18,
+      price: 174168492.693748,
+    },
+    token: {
+      address: "0x88a43bbdf9d098eec7bceda4e2494615dfd9bb9c",
+      chainId: 8453,
+      decimals: 18,
+      apy: 20.88049,
+      logosUri: [],
+      name: "Uniswap V2",
+      primaryAddress: "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
+      protocolSlug: "uniswap-v2",
+      symbol: "UNI-V2",
+      type: "defi",
+      underlyingTokens: [
+        {
+          address: "0x4200000000000000000000000000000000000006",
+          chainId: 8453,
+          decimals: 18,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/39810/thumb/weth.png?1724139790",
+          ],
+          name: "L2 Standard Bridged WETH  Base ",
+          symbol: "WETH",
+          type: "base",
+        },
+        {
+          address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          chainId: 8453,
+          decimals: 6,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696560694",
+          ],
+          name: "USDC",
+          symbol: "USDC",
+          type: "base",
+        },
+      ],
+    },
+  },
+  {
+    balance: {
+      amount: "58472431770130",
+      decimals: 18,
+      price: 3525958.418723757,
+    },
+    token: {
+      address: "0x950847d1dd451b67a2fc1795c0c9a53cf88e63a2",
+      chainId: 8453,
+      decimals: 18,
+      apy: null,
+      logosUri: [],
+      name: "Uniswap V2",
+      primaryAddress: "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
+      protocolSlug: "uniswap-v2",
+      symbol: "UNI-V2",
+      type: "defi",
+      underlyingTokens: [
+        {
+          address: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+          chainId: 8453,
+          decimals: 18,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/39807/thumb/dai.png?1724126571",
+          ],
+          name: "L2 Standard Bridged DAI  Base ",
+          symbol: "DAI",
+          type: "base",
+        },
+        {
+          address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          chainId: 8453,
+          decimals: 6,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696560694",
+          ],
+          name: "USDC",
+          symbol: "USDC",
+          type: "base",
+        },
+      ],
+    },
+  },
+  {
+    balance: {
+      amount: "96995500",
+      decimals: 5,
+      price: 1.652376441901957,
+    },
+    token: {
+      address: "0xf42f5795d9ac7e9d757db633d693cd548cfd9169",
+      chainId: 8453,
+      decimals: 6,
+      apy: 18.81,
+      logosUri: [],
+      name: "Fluid USDCoin",
+      primaryAddress: "0xf42f5795d9ac7e9d757db633d693cd548cfd9169",
+      protocolSlug: "fluid",
+      symbol: "fUSDC",
+      type: "defi",
+      underlyingTokens: [
+        {
+          address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          chainId: 8453,
+          decimals: 6,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696560694",
+          ],
+          name: "USDC",
+          symbol: "USDC",
+          type: "base",
+        },
+      ],
+    },
+  },
+  {
+    balance: {
+      amount: "677961709847220000",
+      decimals: 18,
+      price: 118.04164640603918,
+      token: "0x21594b992f68495dd28d605834b58889d0a727c7",
+    },
+    token: {
+      address: "0x21594b992f68495dd28d605834b58889d0a727c7",
+      apy: 70.55373,
+      chainId: 8453,
+      decimals: 18,
+      logosUri: [],
+      name: "Volatile AMM - VIRTUAL/WETH",
+      primaryAddress: "0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43",
+      protocolSlug: "aerodrome",
+      symbol: "vAMM-VIRTUAL/WETH",
+      type: "defi",
+      underlyingTokens: [
+        {
+          address: "0x4200000000000000000000000000000000000006",
+          chainId: 8453,
+          decimals: 18,
+          logosUri: [
+            "http:/assets.coingecko.com/coins/images/39810/thumb/weth.png?1724139790",
+          ],
+          name: "L2 Standard Bridged WETH  Base ",
+          symbol: "WETH",
+          type: "defi",
+        },
+        {
+          address: "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+          chainId: 8453,
+          decimals: 18,
+          logosUri: [
+            "http:/assets.coingecko.com/coins/images/34057/thumb/LOGOMARK.png?1708356054",
+          ],
+          name: "Virtuals Protocol",
+          symbol: "VIRTUAL",
+          type: "base",
+        },
+      ],
+    },
+  },
+];

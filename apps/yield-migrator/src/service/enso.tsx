@@ -5,7 +5,7 @@ import { isAddress, Address } from "viem";
 import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
 import { Token } from "./common";
 import { useSendEnsoTransaction } from "./wallet";
-import { ONEINCH_ONLY_TOKENS } from "./constants";
+import { DEFAULT_SLIPPAGE, ONEINCH_ONLY_TOKENS } from "./constants";
 
 let ensoClient: EnsoClient;
 
@@ -42,7 +42,7 @@ export const useEnsoData = (
   amountIn: string,
   tokenIn: Address,
   tokenOut: Address,
-  slippage = 25, // 0.25%
+  slippage = DEFAULT_SLIPPAGE,
 ) => {
   const { address } = useAccount();
   const chainId = useChainId();
@@ -132,16 +132,22 @@ export const useEnsoBalances = () => {
 export const useEnsoTokenDetails = ({
   address,
   underlyingTokens,
+  type,
+  chainId,
 }: {
   address?: Address | Address[];
   underlyingTokens?: Address | Address[];
+  type?: "defi" | "base";
+  chainId?: number;
 }) => {
-  const chainId = useChainId();
+  const wagmiChainId = useChainId();
   const enabled =
     areAddressesValid(address) || areAddressesValid(underlyingTokens);
 
+  if (!chainId) chainId = wagmiChainId;
+
   return useQuery({
-    queryKey: ["enso-token-details", address, underlyingTokens, chainId],
+    queryKey: ["enso-token-details", address, underlyingTokens, chainId, type],
     queryFn: () =>
       ensoClient
         .getTokenData({
@@ -149,6 +155,7 @@ export const useEnsoTokenDetails = ({
           address,
           chainId,
           includeMetadata: true,
+          type,
         })
         .then((data) =>
           data.data.map((token) => ({

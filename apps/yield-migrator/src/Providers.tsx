@@ -21,8 +21,6 @@ const queryClient = new QueryClient();
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const { colorMode } = useColorMode();
 
-  console.log(colorMode);
-
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
