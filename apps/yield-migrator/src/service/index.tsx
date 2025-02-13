@@ -3,7 +3,10 @@ import { Address, formatUnits, parseUnits } from "viem";
 export const denormalizeValue = (value: string, decimals = 0) =>
   parseUnits(value, decimals).toString();
 
-export const normalizeValue = (value: bigint | string = "0", decimals = 0) => {
+export const normalizeValue = (
+  value: bigint | string | number = "0",
+  decimals = 0,
+) => {
   try {
     return formatUnits(BigInt(value), decimals);
   } catch (e) {

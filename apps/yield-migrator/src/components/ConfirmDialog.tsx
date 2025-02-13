@@ -129,7 +129,7 @@ const ConfirmDialog = ({
               <Spinner />
             ) : (
               <Grid gridTemplateColumns={"1fr 2.5fr"} m={4} gap={1}>
-                <Text fontWeight={"bold"}>You will receive</Text>
+                <Text fontWeight={"bold"}>You will receive:</Text>
                 <Text>
                   {normalizeValue(
                     routeData?.amountOut.toString(),

@@ -155,49 +155,6 @@ export const MOCK_POSITIONS = [
   },
   {
     balance: {
-      amount: "934323014800",
-      decimals: 18,
-      price: 174168492.693748,
-    },
-    token: {
-      address: "0x88a43bbdf9d098eec7bceda4e2494615dfd9bb9c",
-      chainId: 8453,
-      decimals: 18,
-      apy: 20.88049,
-      logosUri: [],
-      name: "Uniswap V2",
-      primaryAddress: "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
-      protocolSlug: "uniswap-v2",
-      symbol: "UNI-V2",
-      type: "defi",
-      underlyingTokens: [
-        {
-          address: "0x4200000000000000000000000000000000000006",
-          chainId: 8453,
-          decimals: 18,
-          logosUri: [
-            "https://assets.coingecko.com/coins/images/39810/thumb/weth.png?1724139790",
-          ],
-          name: "L2 Standard Bridged WETH  Base ",
-          symbol: "WETH",
-          type: "base",
-        },
-        {
-          address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-          chainId: 8453,
-          decimals: 6,
-          logosUri: [
-            "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696560694",
-          ],
-          name: "USDC",
-          symbol: "USDC",
-          type: "base",
-        },
-      ],
-    },
-  },
-  {
-    balance: {
       amount: "58472431770130",
       decimals: 18,
       price: 3525958.418723757,
@@ -223,6 +180,49 @@ export const MOCK_POSITIONS = [
           ],
           name: "L2 Standard Bridged DAI  Base ",
           symbol: "DAI",
+          type: "base",
+        },
+        {
+          address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          chainId: 8453,
+          decimals: 6,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/6319/thumb/usdc.png?1696560694",
+          ],
+          name: "USDC",
+          symbol: "USDC",
+          type: "base",
+        },
+      ],
+    },
+  },
+  {
+    balance: {
+      amount: "934323014800",
+      decimals: 18,
+      price: 174168492.693748,
+    },
+    token: {
+      address: "0x88a43bbdf9d098eec7bceda4e2494615dfd9bb9c",
+      chainId: 8453,
+      decimals: 18,
+      apy: 20.88049,
+      logosUri: [],
+      name: "Uniswap V2",
+      primaryAddress: "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
+      protocolSlug: "uniswap-v2",
+      symbol: "UNI-V2",
+      type: "defi",
+      underlyingTokens: [
+        {
+          address: "0x4200000000000000000000000000000000000006",
+          chainId: 8453,
+          decimals: 18,
+          logosUri: [
+            "https://assets.coingecko.com/coins/images/39810/thumb/weth.png?1724139790",
+          ],
+          name: "L2 Standard Bridged WETH  Base ",
+          symbol: "WETH",
           type: "base",
         },
         {

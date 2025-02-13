@@ -154,16 +154,24 @@ const RenderSkeletons = () =>
 
 const usePositions = () => {
   const { data: balances, isLoading: balancesLoading } = useEnsoBalances();
-  const notEmptyBalanceAddresses = balances
+  const sortedBalances = balances
+    ?.slice()
+    .sort(
+      (a, b) =>
+        +normalizeValue(+b.amount, b.decimals) * +b.price -
+        +normalizeValue(+a.amount, a.decimals) * +a.price,
+    );
+  const notEmptyBalanceAddresses = sortedBalances
     ?.filter(({ price, token }) => +price > 0 && isAddress(token))
     .map((position) => position.token);
+
   const { data: positionsTokens, isLoading: tokenLoading } =
     useEnsoTokenDetails({
       address: notEmptyBalanceAddresses,
       type: "defi",
     });
 
-  const positions = balances
+  const positions = sortedBalances
     ?.map((balance) => {
       const token = positionsTokens?.find(
         (token) => token.address === balance.token,
@@ -192,15 +200,18 @@ const useTargetTokens = (
       chainId,
     });
 
-  const filteredUnderlyingTokens = underlyingTokensData?.filter(
-    (token) =>
-      token.underlyingTokens?.length === underlyingTokens?.length &&
-      token.underlyingTokens?.every((underlyingToken) =>
-        underlyingTokens.includes(underlyingToken.address),
-      ) &&
-      token.name !== currentTokenName &&
-      token.apy > 0,
-  );
+  const filteredUnderlyingTokens = underlyingTokensData
+    ?.filter(
+      (token) =>
+        token.underlyingTokens?.length === underlyingTokens?.length &&
+        token.underlyingTokens?.every((underlyingToken) =>
+          underlyingTokens.includes(underlyingToken.address),
+        ) &&
+        token.name !== currentTokenName &&
+        token.apy > 0,
+    )
+    .sort((a, b) => b.apy - a.apy);
+
   return { filteredUnderlyingTokens, targetLoading };
 };
 
@@ -234,8 +245,6 @@ const Home = () => {
     setSelectedTarget(target);
     onOpen();
   };
-
-  console.log(positions);
 
   return (
     <Box minH="100vh">
