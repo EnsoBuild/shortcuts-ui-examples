@@ -4,8 +4,10 @@ import App from "./App";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
+import "./index.css";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-      <App />
+    <App />
   </StrictMode>,
 );
