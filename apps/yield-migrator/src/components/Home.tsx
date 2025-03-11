@@ -15,6 +15,7 @@ import {
   Center,
   Skeleton,
   Flex,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { Address, isAddress } from "viem";
 import { useAccount, useChainId } from "wagmi";
@@ -42,7 +43,7 @@ const SourcePoolItem = ({
 
   return (
     <Box
-      p={4}
+      p={{ base: 3, md: 4 }}
       shadow="sm"
       rounded="xl"
       cursor="pointer"
@@ -51,39 +52,48 @@ const SourcePoolItem = ({
       border={"2px solid"}
       borderColor={isSelected ? "blue.500" : "transparent"}
       onClick={onClick}
+      width="100%"
     >
-      <HStack justify="space-between" align="start">
-        <Box>
-          <Text fontSize="md">{position.token.name}</Text>
+      <HStack
+        justify="space-between"
+        align="start"
+        flexWrap={{ base: "wrap", sm: "nowrap" }}
+      >
+        <Box flex="1" minW={{ base: "60%", sm: "auto" }}>
+          <Text fontSize={{ base: "sm", md: "md" }} fontWeight="medium">
+            {position.token.name}
+          </Text>
 
           <Text fontSize="xs" color={"gray.600"}>
             {position.token.protocolSlug}
           </Text>
 
-          <Text>
+          <Text fontSize={{ base: "xs", md: "sm" }}>
             {position.token.underlyingTokens
               .map(({ symbol }) => symbol)
               .join("/")}
           </Text>
 
           {position.token.tvl > 0 && (
-            <Text mt={1} fontSize="sm" color="gray.600">
+            <Text mt={1} fontSize="xs" color="gray.600">
               TVL: ${formatNumber(position.token.tvl)}
             </Text>
           )}
         </Box>
 
         <Box textAlign="right">
-          <Text fontWeight="medium">
+          <Text fontWeight="medium" fontSize={{ base: "sm", md: "md" }}>
             {formatUSD(+normalizedBalance * +position.balance.price)}
           </Text>
 
-          <Text fontSize="sm" color="gray.600">
+          <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600">
             {formatNumber(normalizedBalance)} {position.token.symbol}
           </Text>
 
           {position.token.apy > 0 && (
-            <Text>{position.token.apy.toFixed(2)}% APY</Text>
+            <Text fontSize={{ base: "sm", md: "md" }}>
+              {position.token.apy.toFixed(2)}% APY
+            </Text>
           )}
         </Box>
       </HStack>
@@ -105,21 +115,28 @@ const TargetPoolItem = ({
 
   return (
     <Box
-      p={4}
+      p={{ base: 3, md: 4 }}
       shadow="sm"
       rounded="xl"
       cursor="pointer"
       _hover={{ shadow: "md" }}
       onClick={onSelect}
+      width="100%"
     >
-      <HStack justify="space-between" align="start">
-        <Box>
-          <Text fontSize="md">{token.name}</Text>
+      <HStack
+        justify="space-between"
+        align="start"
+        flexWrap={{ base: "wrap", sm: "nowrap" }}
+      >
+        <Box flex="1" minW={{ base: "60%", sm: "auto" }}>
+          <Text fontSize={{ base: "sm", md: "md" }} fontWeight="medium">
+            {token.name}
+          </Text>
           <Text fontSize="xs" color={"gray.600"}>
             {token.protocolSlug}
           </Text>{" "}
           {token.tvl > 0 && (
-            <Text mt={1} fontSize="sm" color="gray.600">
+            <Text mt={1} fontSize="xs" color="gray.600">
               TVL: ${formatUSD(token.tvl)}
             </Text>
           )}
@@ -127,16 +144,20 @@ const TargetPoolItem = ({
 
         {token.apy > 0 && (
           <Box textAlign="right">
-            <Text fontSize="lg" fontWeight="medium">
+            <Text fontSize={{ base: "md", md: "lg" }} fontWeight="medium">
               {token.apy.toFixed(2)}% APY
             </Text>
             <HStack
               justify="end"
               gap={1}
-              fontSize="sm"
+              fontSize={{ base: "xs", md: "sm" }}
               color={isPositive ? "green.500" : "red.500"}
             >
-              {isPositive ? <TrendingUp /> : <TrendingDown />}
+              {isPositive ? (
+                <TrendingUp size={16} />
+              ) : (
+                <TrendingDown size={16} />
+              )}
               {sourceApy > 0 && token.apy > 0 && (
                 <Text color={isPositive ? "green.600" : "red.600"}>
                   {isPositive ? "+" : ""}
@@ -151,10 +172,13 @@ const TargetPoolItem = ({
   );
 };
 
-const RenderSkeletons = () =>
-  [1, 2, 3].map((_, i) => (
-    <Skeleton rounded="xl" key={i} h={"110px"} w={"340px"} />
+const RenderSkeletons = () => {
+  const skeletonWidth = useBreakpointValue({ base: "100%", md: "340px" });
+
+  return [1, 2, 3].map((_, i) => (
+    <Skeleton rounded="xl" key={i} h={"110px"} w={skeletonWidth} />
   ));
+};
 
 const usePositions = () => {
   const { data: balances, isLoading: balancesLoading } = useEnsoBalances();
@@ -242,19 +266,35 @@ const Home = () => {
     onOpen();
   };
 
+  // Determine if we're on mobile
+  const isMobile = useBreakpointValue({ base: true, md: false });
+
   return (
     <Box minH="100vh">
       <Toaster />
 
       <Center>
-        <Box mx="auto" maxW="7xl" px={4} py={8}>
-          <Flex align="center" gap={5} mb={5}>
+        <Box
+          mx="auto"
+          w="full"
+          maxW="7xl"
+          px={{ base: 2, md: 4 }}
+          py={{ base: 4, md: 8 }}
+        >
+          <Flex
+            align="center"
+            justifyContent="space-around"
+            direction={{ base: "column", sm: "row" }}
+            gap={{ base: 3, md: 5 }}
+            mb={{ base: 3, md: 5 }}
+            w="full"
+          >
             <Box>
               <Heading
                 display="flex"
                 alignItems="center"
                 gap={2}
-                fontSize="2xl"
+                fontSize={{ base: "xl", md: "2xl" }}
                 fontWeight="bold"
               >
                 <ArrowRightLeft className="h-6 w-6" />
@@ -263,7 +303,7 @@ const Home = () => {
             </Box>
 
             <Box
-              p={4}
+              p={{ base: 2, md: 4 }}
               shadow="sm"
               rounded="xl"
               cursor="pointer"
@@ -276,9 +316,15 @@ const Home = () => {
             </Box>
           </Flex>
 
-          <HStack gap={6} w={"full"} align="start">
+          <Flex
+            justifyContent="center"
+            direction={{ base: "column", md: "row" }}
+            gap={{ base: 4, md: 6 }}
+            w="full"
+            align="start"
+          >
             {/* Source Pool Column */}
-            <Box w={390}>
+            <Box w={{ base: "full", md: "390px" }} mb={{ base: 4, md: 0 }}>
               <Card.Root>
                 <Card.Header>
                   <Heading size="md">Your positions</Heading>
@@ -310,7 +356,9 @@ const Home = () => {
                       {address ? (
                         <Text>No positions found</Text>
                       ) : (
-                        <Text>Connect your wallet or use demo to continue</Text>
+                        <Text textAlign="center" px={2}>
+                          Connect your wallet or use demo to continue
+                        </Text>
                       )}
                     </Box>
                   )}
@@ -318,8 +366,15 @@ const Home = () => {
               </Card.Root>
             </Box>
 
+            {/* Mobile arrow indicator */}
+            {isMobile && selectedSource && (
+              <Flex justify="center" w="full" py={2}>
+                <ArrowRight className="h-6 w-6" />
+              </Flex>
+            )}
+
             {/* Target Pool Column */}
-            <Box w={390}>
+            <Box w={{ base: "full", md: "390px" }}>
               <Card.Root>
                 <Card.Header>
                   <Heading size="md">Target Pool</Heading>
@@ -356,7 +411,7 @@ const Home = () => {
                 </Card.Body>
               </Card.Root>
             </Box>
-          </HStack>
+          </Flex>
         </Box>
       </Center>
 

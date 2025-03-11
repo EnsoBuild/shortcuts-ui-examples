@@ -21,7 +21,7 @@ function App() {
             style={{
               display: "flex",
               justifyContent: "space-around",
-              padding: "5px",
+              padding: "10px",
             }}
           >
             <img src={logoUrl} alt={"Enso"} style={{ height: "50px" }} />
