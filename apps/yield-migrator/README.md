@@ -1,50 +1,70 @@
-# React + TypeScript + Vite
+# Yield Migrator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A DeFi application that helps users migrate their yield-bearing positions between different protocols to optimize returns.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Yield Migrator is a web application built with React and Vite that leverages the Enso Build SDK to enable seamless migration between DeFi yield positions. The app allows users to:
 
-## Expanding the ESLint configuration
+1. View their current yield-bearing positions across different protocols
+2. Compare APYs between similar positions on different protocols
+3. Migrate funds from one yield position to another with higher returns
+4. Preview the migration details including expected APY improvement and price impact
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Features
 
-- Configure the top-level `parserOptions` property like this:
+- **Position Discovery**: Automatically detects and displays user's current yield-bearing positions
+- **APY Comparison**: Shows potential yield improvements when migrating to alternative protocols
+- **One-Click Migration**: Seamless migration between protocols with a simple approval and confirmation flow
+- **Transaction Preview**: Detailed preview of the migration including expected returns and price impact
+- **Web3 Integration**: Connect with popular wallets via RainbowKit and wagmi
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Technology Stack
+
+- **Frontend**: React, Chakra UI
+- **Web3**: wagmi, viem, RainbowKit
+- **DeFi Integration**: Enso Finance SDK
+- **Build Tools**: Vite, TypeScript
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16+)
+- Yarn or npm
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```
+   pnpm install
+   ```
+3. Create a `.env.local` file based on `.env.example` and add your Enso API key:
+   ```
+   VITE_ENSO_API_KEY=your_api_key_here
+   ```
+
+### Development
+
+Run the development server:
+
+```
+pnpm dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Building for Production
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+Build the application:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
 ```
+pnpm build
+```
+
+## How It Works
+
+1. **Connect Wallet**: Users connect their Web3 wallet to the application
+2. **Select Source Position**: Users select one of their current yield-bearing positions
+3. **View Target Options**: The app displays alternative positions with the same underlying assets but potentially higher APYs
+4. **Preview Migration**: Users can preview the migration details including expected APY improvement
+5. **Approve & Migrate**: After approving the token spend (if needed), users can confirm the migration in one click
