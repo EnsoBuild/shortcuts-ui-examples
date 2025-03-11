@@ -100,8 +100,8 @@ importers:
         specifier: ^11.13.5
         version: 11.14.0(@types/react@18.3.12)(react@18.3.1)
       '@ensofinance/sdk':
-        specifier: 1.0.13
-        version: 1.0.13
+        specifier: 1.0.14
+        version: 1.0.14
       '@rainbow-me/rainbowkit':
         specifier: '2'
         version: 2.2.3(@tanstack/react-query@5.62.8(react@18.3.1))(@types/react@18.3.12)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(viem@2.21.55(bufferutil@4.0.8)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))(wagmi@2.14.3(@tanstack/query-core@5.62.8)(@tanstack/react-query@5.62.8(react@18.3.1))(@types/react@18.3.12)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(typescript@5.7.2)(utf-8-validate@5.0.10)(viem@2.21.55(bufferutil@4.0.8)(typescript@5.7.2)(utf-8-validate@5.0.10)(zod@3.24.1))(zod@3.24.1))
@@ -412,6 +412,9 @@ packages:
 
   '@ensofinance/sdk@1.0.13':
     resolution: {integrity: sha512-xaZgFFaMvzcvZ/dRzzeV7YdyAGwSWA26VzuWQO8Msll5nfTx926/rErt6MDdqr1WAo0iabwX4E38ih28qKpIVg==}
+
+  '@ensofinance/sdk@1.0.14':
+    resolution: {integrity: sha512-w/xCKhr4myfY2gBG6ym/3/+INybWsdFTSTphqOVQymsNQkBfuMd9HfKxX9IGbO037B1OQD6oPobj8oOY/dzCag==}
 
   '@esbuild/aix-ppc64@0.20.2':
     resolution: {integrity: sha512-D+EBOJHXdNZcLJRBkhENNG8Wji2kgc9AZ9KiPr1JuZjsNtyHzrsfLRrY0tk2H2aoFu6RANO1y1iPPUCDYWkb5g==}
@@ -4781,6 +4784,7 @@ packages:
   yaeti@0.0.6:
     resolution: {integrity: sha512-MvQa//+KcZCUkBTIC9blM+CU9J2GzuTytsOUwf2lidtvkx/6gnEp1QvJv34t9vdjhFmha/mUiNDbN0D0mJWdug==}
     engines: {node: '>=0.10.32'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
@@ -5230,6 +5234,13 @@ snapshots:
   '@emotion/weak-memoize@0.4.0': {}
 
   '@ensofinance/sdk@1.0.13':
+    dependencies:
+      axios: 1.7.9
+      prettier: 3.4.2
+    transitivePeerDependencies:
+      - debug
+
+  '@ensofinance/sdk@1.0.14':
     dependencies:
       axios: 1.7.9
       prettier: 3.4.2
