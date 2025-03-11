@@ -66,9 +66,11 @@ const SourcePoolItem = ({
               .join("/")}
           </Text>
 
-          {/*<Text mt={1} fontSize="sm" color="gray.600">*/}
-          {/*  TVL: ${(1.1).toFixed(1)}M*/}
-          {/*</Text>*/}
+          {position.token.tvl > 0 && (
+            <Text mt={1} fontSize="sm" color="gray.600">
+              TVL: ${formatNumber(position.token.tvl)}
+            </Text>
+          )}
         </Box>
 
         <Box textAlign="right">
@@ -116,9 +118,11 @@ const TargetPoolItem = ({
           <Text fontSize="xs" color={"gray.600"}>
             {token.protocolSlug}
           </Text>{" "}
-          {/*<Text mt={1} fontSize="sm" color="gray.600">*/}
-          {/*  TVL: ${(1.1).toFixed(1)}M*/}
-          {/*</Text>*/}
+          {token.tvl > 0 && (
+            <Text mt={1} fontSize="sm" color="gray.600">
+              TVL: ${formatUSD(token.tvl)}
+            </Text>
+          )}
         </Box>
 
         {token.apy > 0 && (
@@ -190,26 +194,18 @@ const usePositions = () => {
 };
 
 const useTargetTokens = (
-  underlyingTokens: Address[],
+  underlyingTokensExact: Address[],
   currentTokenName: string,
   chainId?: number,
 ) => {
   const { data: underlyingTokensData, isLoading: targetLoading } =
     useEnsoTokenDetails({
-      underlyingTokens,
+      underlyingTokensExact,
       chainId,
     });
 
   const filteredUnderlyingTokens = underlyingTokensData
-    ?.filter(
-      (token) =>
-        token.underlyingTokens?.length === underlyingTokens?.length &&
-        token.underlyingTokens?.every((underlyingToken) =>
-          underlyingTokens.includes(underlyingToken.address),
-        ) &&
-        token.name !== currentTokenName &&
-        token.apy > 0,
-    )
+    ?.filter((token) => token.name !== currentTokenName && token.apy > 0)
     .sort((a, b) => b.apy - a.apy);
 
   return { filteredUnderlyingTokens, targetLoading };

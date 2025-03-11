@@ -2,7 +2,7 @@ import { useAccount, useChainId } from "wagmi";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { isAddress, Address } from "viem";
-import { EnsoClient, RouteParams, QuoteParams } from "@ensofinance/sdk";
+import { EnsoClient, RouteParams } from "@ensofinance/sdk";
 import { Token } from "./common";
 import { useSendEnsoTransaction } from "./wallet";
 import { DEFAULT_SLIPPAGE, ONEINCH_ONLY_TOKENS } from "./constants";
@@ -114,25 +114,6 @@ const useEnsoRouterData = (params: RouteParams, active?: boolean) =>
     retry: 2,
   });
 
-const useEnsoQuote = (params: QuoteParams) =>
-  useQuery({
-    queryKey: [
-      "enso-quote",
-      params.chainId,
-      params.fromAddress,
-      params.tokenIn,
-      params.tokenOut,
-      params.amountIn,
-    ],
-    queryFn: () => ensoClient.getQuoteData(params),
-    enabled:
-      +params.amountIn > 0 &&
-      isAddress(params.tokenIn) &&
-      isAddress(params.tokenOut) &&
-      params.tokenIn !== params.tokenOut,
-    retry: 2,
-  });
-
 export const useEnsoBalances = () => {
   const { address } = useAccount();
   const chainId = useChainId();
@@ -147,27 +128,27 @@ export const useEnsoBalances = () => {
 
 export const useEnsoTokenDetails = ({
   address,
-  underlyingTokens,
+  underlyingTokensExact,
   type,
   chainId,
 }: {
   address?: Address | Address[];
-  underlyingTokens?: Address | Address[];
+  underlyingTokensExact?: Address | Address[];
   type?: "defi" | "base";
   chainId?: number;
 }) => {
   const wagmiChainId = useChainId();
   const enabled =
-    areAddressesValid(address) || areAddressesValid(underlyingTokens);
+    areAddressesValid(address) || areAddressesValid(underlyingTokensExact);
 
   if (!chainId) chainId = wagmiChainId;
 
   return useQuery({
-    queryKey: ["enso-token-details", address, underlyingTokens, chainId, type],
+    queryKey: ["enso-token-details", address, underlyingTokensExact, chainId, type],
     queryFn: () =>
       ensoClient
         .getTokenData({
-          underlyingTokens,
+          underlyingTokensExact,
           address,
           chainId,
           includeMetadata: true,
