@@ -1,6 +1,6 @@
-import {BalanceData, TokenData} from "@ensofinance/sdk";
+import { BalanceData, TokenData } from "@ensofinance/sdk";
 
 export type Position = {
-    balance: BalanceData;
-    token: TokenData;
+  balance: BalanceData;
+  token: TokenData & { project: string };
 };

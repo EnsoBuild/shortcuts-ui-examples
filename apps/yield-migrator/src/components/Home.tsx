@@ -26,6 +26,7 @@ import { MOCK_POSITIONS } from "@/service/constants";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Toaster } from "@/components/ui/toaster";
 import { Position } from "@/types";
+import { capitalize } from "@/service/common";
 
 const SourcePoolItem = ({
   position,
@@ -65,7 +66,7 @@ const SourcePoolItem = ({
           </Text>
 
           <Text fontSize="xs" color={"gray.600"}>
-            {position.token.protocolSlug}
+            {capitalize(position.token.project)}
           </Text>
 
           <Text fontSize={{ base: "xs", md: "sm" }}>
@@ -106,7 +107,7 @@ const TargetPoolItem = ({
   sourceApy,
   onSelect,
 }: {
-  token: TokenData;
+  token: TokenData & { project?: string };
   sourceApy: number;
   onSelect: () => void;
 }) => {
@@ -133,7 +134,7 @@ const TargetPoolItem = ({
             {token.name}
           </Text>
           <Text fontSize="xs" color={"gray.600"}>
-            {token.protocolSlug}
+            {capitalize(token.project)}
           </Text>{" "}
           {token.tvl > 0 && (
             <Text mt={1} fontSize="xs" color="gray.600">
