@@ -242,9 +242,9 @@ export const useExtendedSendTransaction = (
   };
 };
 
-export const useApproveIfNecessary = (tokenIn: Address, amount: string) => {
-  const allowance = useAllowance(tokenIn, ENSO_ROUTER_ADDRESS);
-  const approveData = useApprove(tokenIn, ENSO_ROUTER_ADDRESS, amount);
+export const useApproveIfNecessary = (tokenIn: Address, amount: string, spender: Address) => {
+  const allowance = useAllowance(tokenIn, spender);
+  const approveData = useApprove(tokenIn, spender, amount);
   const writeApprove = useExtendedContractWrite(
     approveData.title,
     approveData.args,

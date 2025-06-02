@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { TokenData } from "@ensofinance/sdk";
-import { useEnsoData } from "@/service/enso";
+import { useEnsoApprove, useEnsoData } from "@/service/enso";
 import { useApproveIfNecessary } from "@/service/wallet";
 import { capitalize } from "@/service/common";
 import { normalizeValue } from "@/service";
@@ -54,10 +54,14 @@ const ConfirmDialog = ({
     chainId: position?.token.chainId,
     active: open,
   });
-
+  const approveData = useEnsoApprove(
+    position?.token.address,
+    position?.balance.amount,
+  );
   const approve = useApproveIfNecessary(
     position?.token.address,
-    position?.balance.amount
+    position?.balance.amount,
+    approveData.data?.spender,
   );
 
   const approveNeeded =
@@ -155,7 +159,7 @@ const ConfirmDialog = ({
                 <Text fontSize={{ base: "sm", md: "md" }}>
                   {normalizeValue(
                     routeData?.amountOut.toString(),
-                    targetToken?.decimals
+                    targetToken?.decimals,
                   )}{" "}
                   {targetToken?.symbol}
                 </Text>
