@@ -66,7 +66,7 @@ const SourcePoolItem = ({
           </Text>
 
           <Text fontSize="xs" color={"gray.600"}>
-            {capitalize(position.token.project)}
+            {capitalize(position.token.project ?? "")}
           </Text>
 
           <Text fontSize={{ base: "xs", md: "sm" }}>
